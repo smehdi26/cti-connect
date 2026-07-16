@@ -1,6 +1,27 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+import { toast } from "sonner";
 import { PageHeader } from "@/components/dashboard/DashboardLayout";
 import { Plus, Phone, Wifi, Cable, Camera, ShieldCheck, Server, MoreHorizontal } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export const Route = createFileRoute("/dashboard/equipements")({
   head: () => ({ meta: [{ title: "Équipements — CTI-Network" }] }),
@@ -16,7 +37,17 @@ const categories = [
   { name: "Contrôle d'accès", count: 110, icon: ShieldCheck, tone: "from-rose-500/20 to-rose-500/5" },
 ];
 
-const equipments = [
+type Equipment = {
+  ref: string;
+  model: string;
+  type: string;
+  client: string;
+  site: string;
+  status: "En service" | "Alerte" | "Maintenance";
+  lastCheck: string;
+};
+
+const initial: Equipment[] = [
   { ref: "GIG-N870-014", model: "Gigaset N870 IP PRO", type: "DECT Multicellulaire", client: "Groupe Poulina", site: "Ben Arous", status: "En service", lastCheck: "12 juil." },
   { ref: "NEC-SV9100-002", model: "NEC SV9100", type: "IP-PBX", client: "Société Générale", site: "Tunis Centre", status: "En service", lastCheck: "10 juil." },
   { ref: "UNF-OS-018", model: "Unify OpenScape Business", type: "Standard IP", client: "Ooredoo Tunisie", site: "Les Berges du Lac", status: "En service", lastCheck: "08 juil." },
@@ -27,22 +58,95 @@ const equipments = [
 ];
 
 const statusColor: Record<string, string> = {
-  "En service": "bg-emerald-50 text-emerald-700 ring-emerald-200",
-  Alerte: "bg-red-50 text-red-700 ring-red-200",
-  Maintenance: "bg-amber-50 text-amber-700 ring-amber-200",
+  "En service": "bg-emerald-50 text-emerald-700 ring-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-300 dark:ring-emerald-500/30",
+  Alerte: "bg-red-50 text-red-700 ring-red-200 dark:bg-red-500/10 dark:text-red-300 dark:ring-red-500/30",
+  Maintenance: "bg-amber-50 text-amber-700 ring-amber-200 dark:bg-amber-500/10 dark:text-amber-300 dark:ring-amber-500/30",
 };
 
 function EquipementsPage() {
+  const [equipments, setEquipments] = useState<Equipment[]>(initial);
+  const [open, setOpen] = useState(false);
+  const [form, setForm] = useState({
+    ref: "",
+    model: "",
+    type: "",
+    client: "",
+    site: "",
+    status: "En service" as Equipment["status"],
+  });
+
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.ref.trim() || !form.model.trim()) return;
+    setEquipments((prev) => [{ ...form, lastCheck: "aujourd'hui" }, ...prev]);
+    setForm({ ref: "", model: "", type: "", client: "", site: "", status: "En service" });
+    setOpen(false);
+    toast.success("Équipement ajouté");
+  };
+
   return (
     <>
       <PageHeader
         title="Équipements"
         description="Parc installé chez vos clients — téléphonie, réseau et sécurité."
         action={
-          <button className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-[var(--shadow-soft)] transition hover:opacity-95">
-            <Plus className="h-4 w-4" />
-            Ajouter un équipement
-          </button>
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+              <button className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-[var(--shadow-soft)] transition hover:opacity-95">
+                <Plus className="h-4 w-4" />
+                Ajouter un équipement
+              </button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[560px]">
+              <form onSubmit={submit}>
+                <DialogHeader>
+                  <DialogTitle>Nouvel équipement</DialogTitle>
+                  <DialogDescription>Enregistrez un équipement dans le parc client.</DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="grid gap-2">
+                      <Label htmlFor="ref">Référence</Label>
+                      <Input id="ref" required value={form.ref} onChange={(e) => setForm({ ...form, ref: e.target.value })} placeholder="GIG-N870-015" />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="model">Modèle</Label>
+                      <Input id="model" required value={form.model} onChange={(e) => setForm({ ...form, model: e.target.value })} placeholder="Gigaset N870 IP PRO" />
+                    </div>
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="type">Type</Label>
+                    <Input id="type" value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })} placeholder="DECT Multicellulaire, Caméra IP…" />
+                  </div>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="grid gap-2">
+                      <Label htmlFor="client">Client</Label>
+                      <Input id="client" value={form.client} onChange={(e) => setForm({ ...form, client: e.target.value })} />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="site">Site</Label>
+                      <Input id="site" value={form.site} onChange={(e) => setForm({ ...form, site: e.target.value })} />
+                    </div>
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>État</Label>
+                    <Select value={form.status} onValueChange={(v) => setForm({ ...form, status: v as Equipment["status"] })}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="En service">En service</SelectItem>
+                        <SelectItem value="Maintenance">Maintenance</SelectItem>
+                        <SelectItem value="Alerte">Alerte</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button type="button" variant="outline" onClick={() => setOpen(false)}>Annuler</Button>
+                  <Button type="submit">Enregistrer</Button>
+                </DialogFooter>
+              </form>
+            </DialogContent>
+          </Dialog>
         }
       />
 
