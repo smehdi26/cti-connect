@@ -4,9 +4,9 @@ import logo from "@/assets/cti-logo.png";
 
 const nav = [
   { to: "/dashboard", label: "Tableau de bord", icon: LayoutDashboard, exact: true },
-  { to: "/dashboard/clients", label: "Clients", icon: Building2 },
-  { to: "/dashboard/tickets", label: "Tickets", icon: Ticket },
-  { to: "/dashboard/equipements", label: "Équipements", icon: Cpu },
+  { to: "/dashboard/clients", label: "Clients", icon: Building2, exact: false },
+  { to: "/dashboard/tickets", label: "Tickets", icon: Ticket, exact: false },
+  { to: "/dashboard/equipements", label: "Équipements", icon: Cpu, exact: false },
 ] as const;
 
 export function DashboardLayout() {
