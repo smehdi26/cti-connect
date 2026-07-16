@@ -71,6 +71,35 @@
   --shadow-soft: 0 4px 20px -6px color-mix(in oklab, var(--brand-deep) 15%, transparent);
 }
 
+.dark {
+  --brand-deep: oklch(0.18 0.05 260);
+  --brand-mid: oklch(0.28 0.07 254);
+  --brand-accent: oklch(0.68 0.14 244);
+  --brand-soft: oklch(0.24 0.03 252);
+
+  --background: oklch(0.16 0.02 258);
+  --foreground: oklch(0.96 0.005 250);
+  --card: oklch(0.20 0.025 258);
+  --card-foreground: oklch(0.96 0.005 250);
+  --popover: oklch(0.20 0.025 258);
+  --popover-foreground: oklch(0.96 0.005 250);
+  --primary: oklch(0.68 0.14 244);
+  --primary-foreground: oklch(0.15 0.02 258);
+  --secondary: oklch(0.24 0.03 252);
+  --secondary-foreground: oklch(0.96 0.005 250);
+  --muted: oklch(0.22 0.025 258);
+  --muted-foreground: oklch(0.7 0.02 254);
+  --accent: oklch(0.68 0.14 244);
+  --accent-foreground: oklch(0.15 0.02 258);
+  --destructive: oklch(0.62 0.22 27);
+  --destructive-foreground: oklch(0.98 0.005 250);
+  --border: oklch(0.28 0.02 258);
+  --input: oklch(0.28 0.02 258);
+  --ring: oklch(0.68 0.14 244);
+
+  --gradient-brand: linear-gradient(135deg, oklch(0.22 0.05 260) 0%, oklch(0.30 0.07 254) 50%, oklch(0.45 0.12 244) 100%);
+}
+
 @layer base {
   * {
     border-color: var(--color-border);
