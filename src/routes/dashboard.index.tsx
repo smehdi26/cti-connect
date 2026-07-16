@@ -1,6 +1,27 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { PageHeader } from "@/components/dashboard/DashboardLayout";
-import { Building2, Ticket, Cpu, TrendingUp, ArrowUpRight, CheckCircle2, AlertTriangle } from "lucide-react";
+import {
+  Building2,
+  Ticket,
+  Cpu,
+  TrendingUp,
+  ArrowUpRight,
+  CheckCircle2,
+  AlertTriangle,
+  CalendarDays,
+  MapPin,
+  Clock,
+} from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Calendar } from "@/components/ui/calendar";
 
 export const Route = createFileRoute("/dashboard/")({
   head: () => ({ meta: [{ title: "Tableau de bord — CTI-Network" }] }),
@@ -21,12 +42,140 @@ const activity = [
   { type: "ok", text: "Ticket #4821 résolu — Configuration DECT", time: "hier" },
 ];
 
+type Event = {
+  date: string; // YYYY-MM-DD
+  title: string;
+  client: string;
+  site: string;
+  time: string;
+  type: "install" | "maintenance" | "audit";
+};
+
+const today = new Date();
+const iso = (d: Date) => d.toISOString().slice(0, 10);
+const addDays = (n: number) => {
+  const d = new Date(today);
+  d.setDate(d.getDate() + n);
+  return iso(d);
+};
+
+const events: Event[] = [
+  { date: addDays(0), title: "Audit trimestriel VOIP", client: "Société Générale", site: "Tunis Centre", time: "10:00", type: "audit" },
+  { date: addDays(1), title: "Installation bornes WIFI", client: "Hôtel Laico", site: "Hammamet", time: "09:30", type: "install" },
+  { date: addDays(3), title: "Maintenance préventive DECT", client: "Groupe Poulina", site: "Ben Arous", time: "14:00", type: "maintenance" },
+  { date: addDays(5), title: "Migration standard IP", client: "Ooredoo Tunisie", site: "Les Berges du Lac", time: "08:00", type: "install" },
+  { date: addDays(8), title: "Contrôle caméras IP", client: "Délice Danone", site: "Sfax", time: "11:00", type: "maintenance" },
+  { date: addDays(12), title: "Audit annuel sécurité", client: "STEG", site: "Tunis", time: "09:00", type: "audit" },
+];
+
+const typeStyles: Record<Event["type"], { label: string; cls: string }> = {
+  install: { label: "Installation", cls: "bg-blue-50 text-blue-700 ring-blue-200 dark:bg-blue-500/10 dark:text-blue-300 dark:ring-blue-500/30" },
+  maintenance: { label: "Maintenance", cls: "bg-amber-50 text-amber-700 ring-amber-200 dark:bg-amber-500/10 dark:text-amber-300 dark:ring-amber-500/30" },
+  audit: { label: "Audit", cls: "bg-emerald-50 text-emerald-700 ring-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-300 dark:ring-emerald-500/30" },
+};
+
 function DashboardHome() {
+  const [open, setOpen] = useState(false);
+  const [selected, setSelected] = useState<Date | undefined>(today);
+
+  const eventDates = events.map((e) => new Date(e.date));
+  const selectedIso = selected ? iso(selected) : "";
+  const dayEvents = events.filter((e) => e.date === selectedIso);
+
   return (
     <>
       <PageHeader
         title="Bonjour, Amine"
         description="Voici un aperçu de vos installations et de l'activité récente."
+        action={
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+              <button className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-[var(--shadow-soft)] transition hover:opacity-95">
+                <CalendarDays className="h-4 w-4" />
+                Calendrier
+                <span className="ml-1 rounded-full bg-white/15 px-1.5 py-0.5 text-[10px] font-medium">
+                  {events.length}
+                </span>
+              </button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[720px]">
+              <DialogHeader>
+                <DialogTitle>Calendrier des interventions</DialogTitle>
+                <DialogDescription>
+                  Planning des installations, maintenances et audits programmés.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-6 md:grid-cols-[auto_1fr]">
+                <div className="rounded-xl border border-border bg-background p-2">
+                  <Calendar
+                    mode="single"
+                    selected={selected}
+                    onSelect={setSelected}
+                    modifiers={{ hasEvent: eventDates }}
+                    modifiersClassNames={{
+                      hasEvent: "relative font-semibold text-[color:var(--brand-accent)] after:absolute after:bottom-1 after:left-1/2 after:h-1 after:w-1 after:-translate-x-1/2 after:rounded-full after:bg-[color:var(--brand-accent)]",
+                    }}
+                    className="pointer-events-auto"
+                  />
+                </div>
+                <div className="min-w-0">
+                  <div className="mb-3 flex items-center justify-between">
+                    <h3 className="font-display text-sm font-semibold text-foreground">
+                      {selected
+                        ? selected.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })
+                        : "Sélectionnez une date"}
+                    </h3>
+                    <span className="text-xs text-muted-foreground">
+                      {dayEvents.length} événement{dayEvents.length > 1 ? "s" : ""}
+                    </span>
+                  </div>
+                  {dayEvents.length === 0 ? (
+                    <div className="rounded-xl border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
+                      Aucune intervention prévue ce jour.
+                    </div>
+                  ) : (
+                    <ul className="space-y-2">
+                      {dayEvents.map((e, i) => (
+                        <li key={i} className="rounded-xl border border-border bg-background p-3">
+                          <div className="flex items-start justify-between gap-2">
+                            <div>
+                              <div className="text-sm font-medium text-foreground">{e.title}</div>
+                              <div className="mt-0.5 text-xs text-muted-foreground">{e.client}</div>
+                            </div>
+                            <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium ring-1 ring-inset ${typeStyles[e.type].cls}`}>
+                              {typeStyles[e.type].label}
+                            </span>
+                          </div>
+                          <div className="mt-2 flex items-center gap-3 text-xs text-muted-foreground">
+                            <span className="inline-flex items-center gap-1"><Clock className="h-3 w-3" />{e.time}</span>
+                            <span className="inline-flex items-center gap-1"><MapPin className="h-3 w-3" />{e.site}</span>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+
+                  <div className="mt-5 border-t border-border pt-4">
+                    <div className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                      À venir
+                    </div>
+                    <ul className="space-y-1.5">
+                      {events.slice(0, 4).map((e, i) => (
+                        <li key={i} className="flex items-center gap-2 text-xs">
+                          <span className="w-16 shrink-0 text-muted-foreground">
+                            {new Date(e.date).toLocaleDateString("fr-FR", { day: "2-digit", month: "short" })}
+                          </span>
+                          <span className="truncate text-foreground">{e.title}</span>
+                          <span className="ml-auto shrink-0 text-muted-foreground">{e.time}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+        }
       />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -71,8 +220,9 @@ function DashboardHome() {
           </ul>
         </div>
 
-        <div
-          className="rounded-2xl p-6 text-white shadow-[var(--shadow-elegant)]"
+        <button
+          onClick={() => setOpen(true)}
+          className="rounded-2xl p-6 text-left text-white shadow-[var(--shadow-elegant)] transition hover:-translate-y-0.5"
           style={{ background: "var(--gradient-brand)" }}
         >
           <div className="text-xs uppercase tracking-[0.2em] text-white/60">
@@ -82,12 +232,13 @@ function DashboardHome() {
             Prochaine intervention préventive
           </h3>
           <p className="mt-2 text-sm text-white/75">
-            Audit trimestriel de votre installation VOIP planifié le 24 juillet 2026.
+            Audit trimestriel de votre installation VOIP planifié le {new Date(events[0].date).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}.
           </p>
-          <button className="mt-6 rounded-lg bg-white/10 px-4 py-2 text-sm font-medium ring-1 ring-white/20 backdrop-blur transition hover:bg-white/15">
+          <span className="mt-6 inline-flex items-center gap-2 rounded-lg bg-white/10 px-4 py-2 text-sm font-medium ring-1 ring-white/20 backdrop-blur">
+            <CalendarDays className="h-4 w-4" />
             Voir le calendrier
-          </button>
-        </div>
+          </span>
+        </button>
       </div>
     </>
   );
