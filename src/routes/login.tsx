@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { AuthLayout } from "@/components/auth/AuthLayout";
 import { Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
 
@@ -18,6 +18,7 @@ export const Route = createFileRoute("/login")({
 
 function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <AuthLayout
@@ -39,6 +40,7 @@ function LoginPage() {
         className="space-y-5"
         onSubmit={(e) => {
           e.preventDefault();
+          navigate({ to: "/dashboard" });
         }}
       >
         <Field
