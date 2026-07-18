@@ -4,6 +4,7 @@ import {
   Building2,
   Ticket,
   Cpu,
+  FileSignature,
   LogOut,
   Bell,
   Search,
