@@ -32,6 +32,7 @@ const nav = [
   { to: "/dashboard/clients", label: "Clients", icon: Building2, exact: false },
   { to: "/dashboard/tickets", label: "Tickets", icon: Ticket, exact: false },
   { to: "/dashboard/equipements", label: "Équipements", icon: Cpu, exact: false },
+  { to: "/dashboard/contrats", label: "Contrats", icon: FileSignature, exact: false },
 ] as const;
 
 const notifications = [
