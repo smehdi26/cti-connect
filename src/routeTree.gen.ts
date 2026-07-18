@@ -18,6 +18,7 @@ import { Route as DashboardTicketsRouteImport } from './routes/dashboard.tickets
 import { Route as DashboardEquipementsRouteImport } from './routes/dashboard.equipements'
 import { Route as DashboardContratsRouteImport } from './routes/dashboard.contrats'
 import { Route as DashboardClientsIndexRouteImport } from './routes/dashboard.clients.index'
+import { Route as DashboardClientsSlugRouteImport } from './routes/dashboard.clients.$slug'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -64,6 +65,11 @@ const DashboardClientsIndexRoute = DashboardClientsIndexRouteImport.update({
   path: '/clients/',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardClientsSlugRoute = DashboardClientsSlugRouteImport.update({
+  id: '/clients/$slug',
+  path: '/clients/$slug',
+  getParentRoute: () => DashboardRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -74,6 +80,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/equipements': typeof DashboardEquipementsRoute
   '/dashboard/tickets': typeof DashboardTicketsRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/dashboard/clients/$slug': typeof DashboardClientsSlugRoute
   '/dashboard/clients/': typeof DashboardClientsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -84,6 +91,7 @@ export interface FileRoutesByTo {
   '/dashboard/equipements': typeof DashboardEquipementsRoute
   '/dashboard/tickets': typeof DashboardTicketsRoute
   '/dashboard': typeof DashboardIndexRoute
+  '/dashboard/clients/$slug': typeof DashboardClientsSlugRoute
   '/dashboard/clients': typeof DashboardClientsIndexRoute
 }
 export interface FileRoutesById {
@@ -96,6 +104,7 @@ export interface FileRoutesById {
   '/dashboard/equipements': typeof DashboardEquipementsRoute
   '/dashboard/tickets': typeof DashboardTicketsRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/dashboard/clients/$slug': typeof DashboardClientsSlugRoute
   '/dashboard/clients/': typeof DashboardClientsIndexRoute
 }
 export interface FileRouteTypes {
@@ -109,6 +118,7 @@ export interface FileRouteTypes {
     | '/dashboard/equipements'
     | '/dashboard/tickets'
     | '/dashboard/'
+    | '/dashboard/clients/$slug'
     | '/dashboard/clients/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -119,6 +129,7 @@ export interface FileRouteTypes {
     | '/dashboard/equipements'
     | '/dashboard/tickets'
     | '/dashboard'
+    | '/dashboard/clients/$slug'
     | '/dashboard/clients'
   id:
     | '__root__'
@@ -130,6 +141,7 @@ export interface FileRouteTypes {
     | '/dashboard/equipements'
     | '/dashboard/tickets'
     | '/dashboard/'
+    | '/dashboard/clients/$slug'
     | '/dashboard/clients/'
   fileRoutesById: FileRoutesById
 }
@@ -205,6 +217,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardClientsIndexRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/clients/$slug': {
+      id: '/dashboard/clients/$slug'
+      path: '/clients/$slug'
+      fullPath: '/dashboard/clients/$slug'
+      preLoaderRoute: typeof DashboardClientsSlugRouteImport
+      parentRoute: typeof DashboardRoute
+    }
   }
 }
 
@@ -213,6 +232,7 @@ interface DashboardRouteChildren {
   DashboardEquipementsRoute: typeof DashboardEquipementsRoute
   DashboardTicketsRoute: typeof DashboardTicketsRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
+  DashboardClientsSlugRoute: typeof DashboardClientsSlugRoute
   DashboardClientsIndexRoute: typeof DashboardClientsIndexRoute
 }
 
@@ -221,6 +241,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardEquipementsRoute: DashboardEquipementsRoute,
   DashboardTicketsRoute: DashboardTicketsRoute,
   DashboardIndexRoute: DashboardIndexRoute,
+  DashboardClientsSlugRoute: DashboardClientsSlugRoute,
   DashboardClientsIndexRoute: DashboardClientsIndexRoute,
 }
 
