@@ -1,8 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/dashboard/DashboardLayout";
-import { Building2, Plus, Search, MapPin, Phone, MoreHorizontal } from "lucide-react";
+import { Building2, Plus, Search, MapPin, Phone, ArrowUpRight } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -23,7 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-export const Route = createFileRoute("/dashboard/clients")({
+export const Route = createFileRoute("/dashboard/clients/")({
   head: () => ({ meta: [{ title: "Clients — CTI-Network" }] }),
   component: ClientsPage,
 });
@@ -56,6 +56,15 @@ const statusColor: Record<string, string> = {
 
 const filters = ["Tous", "Actif", "Maintenance", "En attente"] as const;
 type Filter = (typeof filters)[number];
+
+function slugify(s: string) {
+  return s
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
 
 function ClientsPage() {
   const [clients, setClients] = useState<Client[]>(initial);
@@ -233,9 +242,13 @@ function ClientsPage() {
                   </span>
                 </td>
                 <td className="px-5 py-4 text-right">
-                  <button className="rounded-md p-1.5 text-muted-foreground transition hover:bg-secondary hover:text-foreground">
-                    <MoreHorizontal className="h-4 w-4" />
-                  </button>
+                  <Link
+                    to="/dashboard/clients/$slug"
+                    params={{ slug: slugify(c.name) }}
+                    className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-[color:var(--brand-accent)] transition hover:bg-secondary"
+                  >
+                    Voir la fiche <ArrowUpRight className="h-3.5 w-3.5" />
+                  </Link>
                 </td>
               </tr>
             ))}

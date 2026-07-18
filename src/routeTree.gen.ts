@@ -16,7 +16,9 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
 import { Route as DashboardTicketsRouteImport } from './routes/dashboard.tickets'
 import { Route as DashboardEquipementsRouteImport } from './routes/dashboard.equipements'
-import { Route as DashboardClientsRouteImport } from './routes/dashboard.clients'
+import { Route as DashboardContratsRouteImport } from './routes/dashboard.contrats'
+import { Route as DashboardClientsIndexRouteImport } from './routes/dashboard.clients.index'
+import { Route as DashboardClientsSlugRouteImport } from './routes/dashboard.clients.$slug'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -53,9 +55,19 @@ const DashboardEquipementsRoute = DashboardEquipementsRouteImport.update({
   path: '/equipements',
   getParentRoute: () => DashboardRoute,
 } as any)
-const DashboardClientsRoute = DashboardClientsRouteImport.update({
-  id: '/clients',
-  path: '/clients',
+const DashboardContratsRoute = DashboardContratsRouteImport.update({
+  id: '/contrats',
+  path: '/contrats',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardClientsIndexRoute = DashboardClientsIndexRouteImport.update({
+  id: '/clients/',
+  path: '/clients/',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardClientsSlugRoute = DashboardClientsSlugRouteImport.update({
+  id: '/clients/$slug',
+  path: '/clients/$slug',
   getParentRoute: () => DashboardRoute,
 } as any)
 
@@ -64,19 +76,23 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRouteWithChildren
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
-  '/dashboard/clients': typeof DashboardClientsRoute
+  '/dashboard/contrats': typeof DashboardContratsRoute
   '/dashboard/equipements': typeof DashboardEquipementsRoute
   '/dashboard/tickets': typeof DashboardTicketsRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/dashboard/clients/$slug': typeof DashboardClientsSlugRoute
+  '/dashboard/clients/': typeof DashboardClientsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
-  '/dashboard/clients': typeof DashboardClientsRoute
+  '/dashboard/contrats': typeof DashboardContratsRoute
   '/dashboard/equipements': typeof DashboardEquipementsRoute
   '/dashboard/tickets': typeof DashboardTicketsRoute
   '/dashboard': typeof DashboardIndexRoute
+  '/dashboard/clients/$slug': typeof DashboardClientsSlugRoute
+  '/dashboard/clients': typeof DashboardClientsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -84,10 +100,12 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRouteWithChildren
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
-  '/dashboard/clients': typeof DashboardClientsRoute
+  '/dashboard/contrats': typeof DashboardContratsRoute
   '/dashboard/equipements': typeof DashboardEquipementsRoute
   '/dashboard/tickets': typeof DashboardTicketsRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/dashboard/clients/$slug': typeof DashboardClientsSlugRoute
+  '/dashboard/clients/': typeof DashboardClientsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -96,29 +114,35 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/login'
     | '/signup'
-    | '/dashboard/clients'
+    | '/dashboard/contrats'
     | '/dashboard/equipements'
     | '/dashboard/tickets'
     | '/dashboard/'
+    | '/dashboard/clients/$slug'
+    | '/dashboard/clients/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/login'
     | '/signup'
-    | '/dashboard/clients'
+    | '/dashboard/contrats'
     | '/dashboard/equipements'
     | '/dashboard/tickets'
     | '/dashboard'
+    | '/dashboard/clients/$slug'
+    | '/dashboard/clients'
   id:
     | '__root__'
     | '/'
     | '/dashboard'
     | '/login'
     | '/signup'
-    | '/dashboard/clients'
+    | '/dashboard/contrats'
     | '/dashboard/equipements'
     | '/dashboard/tickets'
     | '/dashboard/'
+    | '/dashboard/clients/$slug'
+    | '/dashboard/clients/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -179,28 +203,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardEquipementsRouteImport
       parentRoute: typeof DashboardRoute
     }
-    '/dashboard/clients': {
-      id: '/dashboard/clients'
+    '/dashboard/contrats': {
+      id: '/dashboard/contrats'
+      path: '/contrats'
+      fullPath: '/dashboard/contrats'
+      preLoaderRoute: typeof DashboardContratsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/clients/': {
+      id: '/dashboard/clients/'
       path: '/clients'
-      fullPath: '/dashboard/clients'
-      preLoaderRoute: typeof DashboardClientsRouteImport
+      fullPath: '/dashboard/clients/'
+      preLoaderRoute: typeof DashboardClientsIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/clients/$slug': {
+      id: '/dashboard/clients/$slug'
+      path: '/clients/$slug'
+      fullPath: '/dashboard/clients/$slug'
+      preLoaderRoute: typeof DashboardClientsSlugRouteImport
       parentRoute: typeof DashboardRoute
     }
   }
 }
 
 interface DashboardRouteChildren {
-  DashboardClientsRoute: typeof DashboardClientsRoute
+  DashboardContratsRoute: typeof DashboardContratsRoute
   DashboardEquipementsRoute: typeof DashboardEquipementsRoute
   DashboardTicketsRoute: typeof DashboardTicketsRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
+  DashboardClientsSlugRoute: typeof DashboardClientsSlugRoute
+  DashboardClientsIndexRoute: typeof DashboardClientsIndexRoute
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
-  DashboardClientsRoute: DashboardClientsRoute,
+  DashboardContratsRoute: DashboardContratsRoute,
   DashboardEquipementsRoute: DashboardEquipementsRoute,
   DashboardTicketsRoute: DashboardTicketsRoute,
   DashboardIndexRoute: DashboardIndexRoute,
+  DashboardClientsSlugRoute: DashboardClientsSlugRoute,
+  DashboardClientsIndexRoute: DashboardClientsIndexRoute,
 }
 
 const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
