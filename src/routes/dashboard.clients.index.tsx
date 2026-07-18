@@ -57,6 +57,15 @@ const statusColor: Record<string, string> = {
 const filters = ["Tous", "Actif", "Maintenance", "En attente"] as const;
 type Filter = (typeof filters)[number];
 
+function slugify(s: string) {
+  return s
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
+
 function ClientsPage() {
   const [clients, setClients] = useState<Client[]>(initial);
   const [filter, setFilter] = useState<Filter>("Tous");
