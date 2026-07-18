@@ -1,8 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/dashboard/DashboardLayout";
-import { Building2, Plus, Search, MapPin, Phone, MoreHorizontal } from "lucide-react";
+import { Building2, Plus, Search, MapPin, Phone, ArrowUpRight } from "lucide-react";
 import {
   Dialog,
   DialogContent,
