@@ -233,9 +233,13 @@ function ClientsPage() {
                   </span>
                 </td>
                 <td className="px-5 py-4 text-right">
-                  <button className="rounded-md p-1.5 text-muted-foreground transition hover:bg-secondary hover:text-foreground">
-                    <MoreHorizontal className="h-4 w-4" />
-                  </button>
+                  <Link
+                    to="/dashboard/clients/$slug"
+                    params={{ slug: slugify(c.name) }}
+                    className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-[color:var(--brand-accent)] transition hover:bg-secondary"
+                  >
+                    Voir la fiche <ArrowUpRight className="h-3.5 w-3.5" />
+                  </Link>
                 </td>
               </tr>
             ))}
