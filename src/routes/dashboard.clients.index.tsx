@@ -23,7 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-export const Route = createFileRoute("/dashboard/clients")({
+export const Route = createFileRoute("/dashboard/clients/")({
   head: () => ({ meta: [{ title: "Clients — CTI-Network" }] }),
   component: ClientsPage,
 });
