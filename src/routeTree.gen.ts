@@ -18,6 +18,8 @@ import { Route as DashboardTicketsRouteImport } from './routes/dashboard.tickets
 import { Route as DashboardEquipementsIndexRouteImport } from './routes/dashboard.equipements.index'
 import { Route as DashboardContratsIndexRouteImport } from './routes/dashboard.contrats.index'
 import { Route as DashboardClientsIndexRouteImport } from './routes/dashboard.clients.index'
+import { Route as DashboardEquipementsRefRouteImport } from './routes/dashboard.equipements.$ref'
+import { Route as DashboardContratsClientIdRouteImport } from './routes/dashboard.contrats.$clientId'
 import { Route as DashboardClientsSlugRouteImport } from './routes/dashboard.clients.$slug'
 
 const SignupRoute = SignupRouteImport.update({
@@ -66,6 +68,17 @@ const DashboardClientsIndexRoute = DashboardClientsIndexRouteImport.update({
   path: '/clients/',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardEquipementsRefRoute = DashboardEquipementsRefRouteImport.update({
+  id: '/equipements/$ref',
+  path: '/equipements/$ref',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardContratsClientIdRoute =
+  DashboardContratsClientIdRouteImport.update({
+    id: '/contrats/$clientId',
+    path: '/contrats/$clientId',
+    getParentRoute: () => DashboardRoute,
+  } as any)
 const DashboardClientsSlugRoute = DashboardClientsSlugRouteImport.update({
   id: '/clients/$slug',
   path: '/clients/$slug',
@@ -80,6 +93,8 @@ export interface FileRoutesByFullPath {
   '/dashboard/tickets': typeof DashboardTicketsRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/clients/$slug': typeof DashboardClientsSlugRoute
+  '/dashboard/contrats/$clientId': typeof DashboardContratsClientIdRoute
+  '/dashboard/equipements/$ref': typeof DashboardEquipementsRefRoute
   '/dashboard/clients/': typeof DashboardClientsIndexRoute
   '/dashboard/contrats/': typeof DashboardContratsIndexRoute
   '/dashboard/equipements/': typeof DashboardEquipementsIndexRoute
@@ -91,6 +106,8 @@ export interface FileRoutesByTo {
   '/dashboard/tickets': typeof DashboardTicketsRoute
   '/dashboard': typeof DashboardIndexRoute
   '/dashboard/clients/$slug': typeof DashboardClientsSlugRoute
+  '/dashboard/contrats/$clientId': typeof DashboardContratsClientIdRoute
+  '/dashboard/equipements/$ref': typeof DashboardEquipementsRefRoute
   '/dashboard/clients': typeof DashboardClientsIndexRoute
   '/dashboard/contrats': typeof DashboardContratsIndexRoute
   '/dashboard/equipements': typeof DashboardEquipementsIndexRoute
@@ -104,6 +121,8 @@ export interface FileRoutesById {
   '/dashboard/tickets': typeof DashboardTicketsRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/clients/$slug': typeof DashboardClientsSlugRoute
+  '/dashboard/contrats/$clientId': typeof DashboardContratsClientIdRoute
+  '/dashboard/equipements/$ref': typeof DashboardEquipementsRefRoute
   '/dashboard/clients/': typeof DashboardClientsIndexRoute
   '/dashboard/contrats/': typeof DashboardContratsIndexRoute
   '/dashboard/equipements/': typeof DashboardEquipementsIndexRoute
@@ -118,6 +137,8 @@ export interface FileRouteTypes {
     | '/dashboard/tickets'
     | '/dashboard/'
     | '/dashboard/clients/$slug'
+    | '/dashboard/contrats/$clientId'
+    | '/dashboard/equipements/$ref'
     | '/dashboard/clients/'
     | '/dashboard/contrats/'
     | '/dashboard/equipements/'
@@ -129,6 +150,8 @@ export interface FileRouteTypes {
     | '/dashboard/tickets'
     | '/dashboard'
     | '/dashboard/clients/$slug'
+    | '/dashboard/contrats/$clientId'
+    | '/dashboard/equipements/$ref'
     | '/dashboard/clients'
     | '/dashboard/contrats'
     | '/dashboard/equipements'
@@ -141,6 +164,8 @@ export interface FileRouteTypes {
     | '/dashboard/tickets'
     | '/dashboard/'
     | '/dashboard/clients/$slug'
+    | '/dashboard/contrats/$clientId'
+    | '/dashboard/equipements/$ref'
     | '/dashboard/clients/'
     | '/dashboard/contrats/'
     | '/dashboard/equipements/'
@@ -218,6 +243,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardClientsIndexRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/equipements/$ref': {
+      id: '/dashboard/equipements/$ref'
+      path: '/equipements/$ref'
+      fullPath: '/dashboard/equipements/$ref'
+      preLoaderRoute: typeof DashboardEquipementsRefRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/contrats/$clientId': {
+      id: '/dashboard/contrats/$clientId'
+      path: '/contrats/$clientId'
+      fullPath: '/dashboard/contrats/$clientId'
+      preLoaderRoute: typeof DashboardContratsClientIdRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/clients/$slug': {
       id: '/dashboard/clients/$slug'
       path: '/clients/$slug'
@@ -232,6 +271,8 @@ interface DashboardRouteChildren {
   DashboardTicketsRoute: typeof DashboardTicketsRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
   DashboardClientsSlugRoute: typeof DashboardClientsSlugRoute
+  DashboardContratsClientIdRoute: typeof DashboardContratsClientIdRoute
+  DashboardEquipementsRefRoute: typeof DashboardEquipementsRefRoute
   DashboardClientsIndexRoute: typeof DashboardClientsIndexRoute
   DashboardContratsIndexRoute: typeof DashboardContratsIndexRoute
   DashboardEquipementsIndexRoute: typeof DashboardEquipementsIndexRoute
@@ -241,6 +282,8 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardTicketsRoute: DashboardTicketsRoute,
   DashboardIndexRoute: DashboardIndexRoute,
   DashboardClientsSlugRoute: DashboardClientsSlugRoute,
+  DashboardContratsClientIdRoute: DashboardContratsClientIdRoute,
+  DashboardEquipementsRefRoute: DashboardEquipementsRefRoute,
   DashboardClientsIndexRoute: DashboardClientsIndexRoute,
   DashboardContratsIndexRoute: DashboardContratsIndexRoute,
   DashboardEquipementsIndexRoute: DashboardEquipementsIndexRoute,
