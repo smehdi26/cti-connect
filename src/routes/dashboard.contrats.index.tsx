@@ -1,8 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/dashboard/DashboardLayout";
-import { FileSignature, Plus, Search, Calendar, Building2 } from "lucide-react";
+import { FileSignature, Plus, Search, Calendar, Building2, ChevronRight } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -22,69 +22,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { MONTHS, initialContracts, type Contract, type Redevance } from "@/lib/contracts-data";
 
-export const Route = createFileRoute("/dashboard/contrats")({
-  head: () => ({ meta: [{ title: "Contrats de maintenance — CTI-Network" }] }),
+export const Route = createFileRoute("/dashboard/contrats/")({
+  head: () => ({
+    meta: [
+      { title: "Contrats de maintenance — CTI-Network" },
+      { name: "description", content: "Suivi des contrats de maintenance CTI-Network : redevances, dates de signature et calendrier des visites préventives." },
+      { property: "og:title", content: "Contrats de maintenance — CTI-Network" },
+      { property: "og:description", content: "Redevances, signatures et visites préventives de vos contrats." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   component: ContratsPage,
 });
 
-type Redevance = "Annuelle" | "Semestrielle";
-type Contract = {
-  clientId: string;
-  contract: string; // company name
-  redevance: Redevance;
-  signedAt: string; // YYYY-MM-DD
-  visits: 4 | 6;
-  visitMonths: string[];
-};
+const initial = initialContracts;
 
-const MONTHS = [
-  "Jan", "Fév", "Mar", "Avr", "Mai", "Juin",
-  "Juil", "Août", "Sep", "Oct", "Nov", "Déc",
-];
-
-const initial: Contract[] = [
-  {
-    clientId: "CLI-001",
-    contract: "Société Générale Tunisie",
-    redevance: "Annuelle",
-    signedAt: "2024-02-14",
-    visits: 6,
-    visitMonths: ["Fév", "Avr", "Juin", "Août", "Oct", "Déc"],
-  },
-  {
-    clientId: "CLI-002",
-    contract: "Groupe Poulina",
-    redevance: "Semestrielle",
-    signedAt: "2023-09-03",
-    visits: 4,
-    visitMonths: ["Mar", "Juin", "Sep", "Déc"],
-  },
-  {
-    clientId: "CLI-003",
-    contract: "Tunisair",
-    redevance: "Annuelle",
-    signedAt: "2024-06-21",
-    visits: 6,
-    visitMonths: ["Jan", "Mar", "Mai", "Juil", "Sep", "Nov"],
-  },
-  {
-    clientId: "CLI-004",
-    contract: "Délice Danone",
-    redevance: "Semestrielle",
-    signedAt: "2025-01-12",
-    visits: 4,
-    visitMonths: ["Fév", "Mai", "Août", "Nov"],
-  },
-  {
-    clientId: "CLI-006",
-    contract: "STEG",
-    redevance: "Annuelle",
-    signedAt: "2022-11-08",
-    visits: 6,
-    visitMonths: ["Fév", "Avr", "Juin", "Août", "Oct", "Déc"],
-  },
-];
 
 function ContratsPage() {
   const [rows, setRows] = useState<Contract[]>(initial);
