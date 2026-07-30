@@ -288,13 +288,23 @@ function ContratsPage() {
                     ))}
                   </div>
                 </td>
+                <td className="px-5 py-4 text-right">
+                  <Link
+                    to="/dashboard/contrats/$clientId"
+                    params={{ clientId: r.clientId }}
+                    className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-[color:var(--brand-deep)] transition hover:bg-secondary"
+                  >
+                    Détails <ChevronRight className="h-3.5 w-3.5" />
+                  </Link>
+                </td>
               </tr>
             ))}
             {visible.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-5 py-12 text-center text-sm text-muted-foreground">
+                <td colSpan={7} className="px-5 py-12 text-center text-sm text-muted-foreground">
                   Aucun contrat trouvé.
                 </td>
+
               </tr>
             )}
           </tbody>
