@@ -194,10 +194,15 @@ function EquipementsPage() {
                 </td>
                 <td className="px-5 py-4 text-muted-foreground">{e.lastCheck}</td>
                 <td className="px-5 py-4 text-right">
-                  <button className="rounded-md p-1.5 text-muted-foreground transition hover:bg-secondary hover:text-foreground">
-                    <MoreHorizontal className="h-4 w-4" />
-                  </button>
+                  <Link
+                    to="/dashboard/equipements/$ref"
+                    params={{ ref: e.ref }}
+                    className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-[color:var(--brand-deep)] transition hover:bg-secondary"
+                  >
+                    Détails <ChevronRight className="h-3.5 w-3.5" />
+                  </Link>
                 </td>
+
               </tr>
             ))}
           </tbody>
