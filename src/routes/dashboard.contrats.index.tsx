@@ -248,7 +248,9 @@ function ContratsPage() {
               <th className="px-5 py-3 font-medium">Date de signature</th>
               <th className="px-5 py-3 font-medium text-right">Visites</th>
               <th className="px-5 py-3 font-medium">Mois des visites</th>
+              <th className="px-5 py-3" />
             </tr>
+
           </thead>
           <tbody className="divide-y divide-border">
             {visible.map((r) => (
