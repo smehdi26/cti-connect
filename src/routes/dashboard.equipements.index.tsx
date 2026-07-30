@@ -1,8 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/dashboard/DashboardLayout";
-import { Plus, Phone, Wifi, Cable, Camera, ShieldCheck, Server, MoreHorizontal } from "lucide-react";
+import { Plus, Phone, Wifi, Cable, Camera, ShieldCheck, Server, ChevronRight } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -22,9 +22,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { initialEquipments, equipmentStatusColor, type Equipment } from "@/lib/equipment-data";
 
-export const Route = createFileRoute("/dashboard/equipements")({
-  head: () => ({ meta: [{ title: "Équipements — CTI-Network" }] }),
+export const Route = createFileRoute("/dashboard/equipements/")({
+  head: () => ({
+    meta: [
+      { title: "Équipements — CTI-Network" },
+      { name: "description", content: "Parc d'équipements installés chez les clients CTI-Network : téléphonie IP, réseau, vidéosurveillance et contrôle d'accès." },
+      { property: "og:title", content: "Équipements — CTI-Network" },
+      { property: "og:description", content: "Inventaire du parc téléphonie, réseau et sécurité." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   component: EquipementsPage,
 });
 
@@ -37,31 +47,9 @@ const categories = [
   { name: "Contrôle d'accès", count: 110, icon: ShieldCheck, tone: "from-rose-500/20 to-rose-500/5" },
 ];
 
-type Equipment = {
-  ref: string;
-  model: string;
-  type: string;
-  client: string;
-  site: string;
-  status: "En service" | "Alerte" | "Maintenance";
-  lastCheck: string;
-};
+const initial = initialEquipments;
+const statusColor = equipmentStatusColor;
 
-const initial: Equipment[] = [
-  { ref: "GIG-N870-014", model: "Gigaset N870 IP PRO", type: "DECT Multicellulaire", client: "Groupe Poulina", site: "Ben Arous", status: "En service", lastCheck: "12 juil." },
-  { ref: "NEC-SV9100-002", model: "NEC SV9100", type: "IP-PBX", client: "Société Générale", site: "Tunis Centre", status: "En service", lastCheck: "10 juil." },
-  { ref: "UNF-OS-018", model: "Unify OpenScape Business", type: "Standard IP", client: "Ooredoo Tunisie", site: "Les Berges du Lac", status: "En service", lastCheck: "08 juil." },
-  { ref: "MTX-SATATYA-041", model: "Matrix SATATYA CIDR20FL", type: "Caméra IP", client: "Délice Danone", site: "Sfax", status: "Alerte", lastCheck: "14 juil." },
-  { ref: "MTX-COSEC-007", model: "Matrix COSEC DOOR", type: "Contrôle d'accès", client: "STEG", site: "Tunis", status: "En service", lastCheck: "05 juil." },
-  { ref: "GIG-DE900-055", model: "Gigaset DE900 IP PRO", type: "Téléphone IP", client: "Hôtel Laico", site: "Hammamet", status: "Maintenance", lastCheck: "01 juil." },
-  { ref: "MYF-500-003", model: "MyFax Server 500", type: "Fax to Mail", client: "Tunisair", site: "Tunis-Carthage", status: "En service", lastCheck: "15 juil." },
-];
-
-const statusColor: Record<string, string> = {
-  "En service": "bg-emerald-50 text-emerald-700 ring-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-300 dark:ring-emerald-500/30",
-  Alerte: "bg-red-50 text-red-700 ring-red-200 dark:bg-red-500/10 dark:text-red-300 dark:ring-red-500/30",
-  Maintenance: "bg-amber-50 text-amber-700 ring-amber-200 dark:bg-amber-500/10 dark:text-amber-300 dark:ring-amber-500/30",
-};
 
 function EquipementsPage() {
   const [equipments, setEquipments] = useState<Equipment[]>(initial);
@@ -206,10 +194,15 @@ function EquipementsPage() {
                 </td>
                 <td className="px-5 py-4 text-muted-foreground">{e.lastCheck}</td>
                 <td className="px-5 py-4 text-right">
-                  <button className="rounded-md p-1.5 text-muted-foreground transition hover:bg-secondary hover:text-foreground">
-                    <MoreHorizontal className="h-4 w-4" />
-                  </button>
+                  <Link
+                    to="/dashboard/equipements/$ref"
+                    params={{ ref: e.ref }}
+                    className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-[color:var(--brand-deep)] transition hover:bg-secondary"
+                  >
+                    Détails <ChevronRight className="h-3.5 w-3.5" />
+                  </Link>
                 </td>
+
               </tr>
             ))}
           </tbody>
