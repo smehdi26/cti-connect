@@ -1,0 +1,151 @@
+{
+  "version": 1,
+  "sdk_version": "0.26.1",
+  "path": "/mcp",
+  "auth": {
+    "type": "none"
+  },
+  "mcp": {
+    "server": {
+      "name": "cti-connect",
+      "version": "0.1.0",
+      "title": "CTI Connect"
+    },
+    "tools": [
+      {
+        "name": "list_clients",
+        "title": "List clients",
+        "description": "List the corporate clients of CTI Connect, optionally filtered by status or a free-text search on name, sector or city.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "status": {
+              "description": "Only return clients with this status.",
+              "type": "string",
+              "enum": [
+                "Actif",
+                "Maintenance",
+                "En attente"
+              ]
+            },
+            "search": {
+              "description": "Free-text filter on name, sector or city.",
+              "type": "string"
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_tickets",
+        "title": "List support tickets",
+        "description": "List CTI Connect support tickets with their client, priority, status, assignee and planned date. Filter by status, priority, client or free text.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "Ouvert",
+                "En cours",
+                "En attente",
+                "Résolu"
+              ]
+            },
+            "priority": {
+              "type": "string",
+              "enum": [
+                "Urgent",
+                "Élevée",
+                "Normale",
+                "Faible"
+              ]
+            },
+            "client": {
+              "description": "Filter on the client company name.",
+              "type": "string"
+            },
+            "search": {
+              "description": "Free-text filter on the ticket subject or id.",
+              "type": "string"
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_equipements",
+        "title": "List equipment",
+        "description": "List the telecom and security equipment installed at CTI Connect clients (IP-PBX, DECT, IP cameras, access control), with status and last check.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "En service",
+                "Alerte",
+                "Maintenance"
+              ]
+            },
+            "client": {
+              "description": "Filter on the client company name.",
+              "type": "string"
+            },
+            "ref": {
+              "description": "Return a single equipment by its exact reference.",
+              "type": "string"
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_contrats",
+        "title": "List maintenance contracts",
+        "description": "List CTI Connect maintenance contracts: client id, company, fee type (Annuelle/Semestrielle), signature date, number of yearly visits and the planned visit months.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "redevance": {
+              "type": "string",
+              "enum": [
+                "Annuelle",
+                "Semestrielle"
+              ]
+            },
+            "clientId": {
+              "description": "Return a single contract by its exact client id, e.g. CLI-001.",
+              "type": "string"
+            }
+          }
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
