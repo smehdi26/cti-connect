@@ -40,6 +40,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { baseTickets } from "@/lib/tickets-data";
+
 import {
   Select,
   SelectContent,
@@ -95,15 +97,10 @@ const seed = (t: Omit<Ticket, "comments" | "attachments" | "history">): Ticket =
   history: [{ id: uid(), at: nowLabel(), author: "Système", text: "Ticket créé" }],
 });
 
-const initial: Ticket[] = [
-  seed({ id: "#4832", subject: "Coupure ligne DECT — Bureau 3ème étage", client: "Société Générale Tunisie", priority: "Urgent", status: "Ouvert", assignee: "Karim H.", age: "il y a 25 min", date: iso(today) }),
-  seed({ id: "#4831", subject: "Configuration IVR pour service client", client: "Ooredoo Tunisie", priority: "Élevée", status: "En cours", assignee: "Sami B.", age: "il y a 2 h", date: iso(addDays(today, 1)) }),
-  seed({ id: "#4830", subject: "Caméra IP hors ligne — Site Sfax", client: "Délice Danone", priority: "Élevée", status: "En cours", assignee: "Aya M.", age: "il y a 3 h", date: iso(addDays(today, 2)) }),
-  seed({ id: "#4829", subject: "Ajout de 12 postes Gigaset", client: "Groupe Poulina", priority: "Normale", status: "Ouvert", assignee: "—", age: "il y a 5 h", date: iso(addDays(today, 3)) }),
-  seed({ id: "#4828", subject: "Migration standard vers VOIP", client: "Hôtel Laico", priority: "Normale", status: "En attente", assignee: "Karim H.", age: "hier", date: iso(addDays(today, 5)) }),
-  seed({ id: "#4827", subject: "Fax to mail — erreur de routage", client: "Tunisair", priority: "Faible", status: "Résolu", assignee: "Sami B.", age: "hier", date: iso(addDays(today, -1)) }),
-  seed({ id: "#4826", subject: "Contrat maintenance annuel", client: "STEG", priority: "Normale", status: "Résolu", assignee: "Aya M.", age: "il y a 2 j", date: iso(addDays(today, -2)) }),
-];
+const initial: Ticket[] = baseTickets.map(({ dayOffset, ...t }) =>
+  seed({ ...t, date: iso(addDays(today, dayOffset)) }),
+);
+
 
 const priorityColor: Record<string, string> = {
   Urgent: "bg-red-50 text-red-700 ring-red-200 dark:bg-red-500/10 dark:text-red-300 dark:ring-red-500/30",
