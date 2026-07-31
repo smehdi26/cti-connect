@@ -22,6 +22,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { initialClients, type Client } from "@/lib/clients-data";
+
 
 export const Route = createFileRoute("/dashboard/clients/")({
   head: () => ({ meta: [{ title: "Clients — CTI-Network" }] }),
