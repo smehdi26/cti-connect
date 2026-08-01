@@ -16,6 +16,7 @@ import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
 import { Route as DashboardTicketsRouteImport } from './routes/dashboard.tickets'
+import { Route as DashboardProfilRouteImport } from './routes/dashboard.profil'
 import { Route as DashboardNotificationsRouteImport } from './routes/dashboard.notifications'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
@@ -60,6 +61,11 @@ const DashboardIndexRoute = DashboardIndexRouteImport.update({
 const DashboardTicketsRoute = DashboardTicketsRouteImport.update({
   id: '/tickets',
   path: '/tickets',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardProfilRoute = DashboardProfilRouteImport.update({
+  id: '/profil',
+  path: '/profil',
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardNotificationsRoute = DashboardNotificationsRouteImport.update({
@@ -127,6 +133,7 @@ export interface FileRoutesByFullPath {
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/dashboard/notifications': typeof DashboardNotificationsRoute
+  '/dashboard/profil': typeof DashboardProfilRoute
   '/dashboard/tickets': typeof DashboardTicketsRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
@@ -145,6 +152,7 @@ export interface FileRoutesByTo {
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/dashboard/notifications': typeof DashboardNotificationsRoute
+  '/dashboard/profil': typeof DashboardProfilRoute
   '/dashboard/tickets': typeof DashboardTicketsRoute
   '/dashboard': typeof DashboardIndexRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
@@ -165,6 +173,7 @@ export interface FileRoutesById {
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/dashboard/notifications': typeof DashboardNotificationsRoute
+  '/dashboard/profil': typeof DashboardProfilRoute
   '/dashboard/tickets': typeof DashboardTicketsRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
@@ -186,6 +195,7 @@ export interface FileRouteTypes {
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/dashboard/notifications'
+    | '/dashboard/profil'
     | '/dashboard/tickets'
     | '/dashboard/'
     | '/.mcp/invoke-tool/$tool'
@@ -204,6 +214,7 @@ export interface FileRouteTypes {
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/dashboard/notifications'
+    | '/dashboard/profil'
     | '/dashboard/tickets'
     | '/dashboard'
     | '/.mcp/invoke-tool/$tool'
@@ -223,6 +234,7 @@ export interface FileRouteTypes {
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/dashboard/notifications'
+    | '/dashboard/profil'
     | '/dashboard/tickets'
     | '/dashboard/'
     | '/.mcp/invoke-tool/$tool'
@@ -294,6 +306,13 @@ declare module '@tanstack/react-router' {
       path: '/tickets'
       fullPath: '/dashboard/tickets'
       preLoaderRoute: typeof DashboardTicketsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/profil': {
+      id: '/dashboard/profil'
+      path: '/profil'
+      fullPath: '/dashboard/profil'
+      preLoaderRoute: typeof DashboardProfilRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/dashboard/notifications': {
@@ -371,6 +390,7 @@ declare module '@tanstack/react-router' {
 
 interface DashboardRouteChildren {
   DashboardNotificationsRoute: typeof DashboardNotificationsRoute
+  DashboardProfilRoute: typeof DashboardProfilRoute
   DashboardTicketsRoute: typeof DashboardTicketsRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
   DashboardClientsSlugRoute: typeof DashboardClientsSlugRoute
@@ -383,6 +403,7 @@ interface DashboardRouteChildren {
 
 const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardNotificationsRoute: DashboardNotificationsRoute,
+  DashboardProfilRoute: DashboardProfilRoute,
   DashboardTicketsRoute: DashboardTicketsRoute,
   DashboardIndexRoute: DashboardIndexRoute,
   DashboardClientsSlugRoute: DashboardClientsSlugRoute,
