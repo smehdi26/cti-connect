@@ -137,8 +137,8 @@ export function DashboardLayout() {
                   </DropdownMenuItem>
                 ))}
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="justify-center text-sm text-[color:var(--brand-accent)]">
-                  Voir toutes les notifications
+                <DropdownMenuItem asChild className="justify-center text-sm text-[color:var(--brand-accent)]">
+                  <Link to="/dashboard/notifications">Voir toutes les notifications</Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -155,11 +155,15 @@ export function DashboardLayout() {
                   <div className="text-xs text-muted-foreground">amine@cti-network.tn</div>
                 </div>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <User className="h-4 w-4" /> Mon profil
+                <DropdownMenuItem asChild>
+                  <Link to="/dashboard/profil">
+                    <User className="h-4 w-4" /> Mon profil
+                  </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Settings className="h-4 w-4" /> Paramètres
+                <DropdownMenuItem asChild>
+                  <Link to="/dashboard/parametres">
+                    <Settings className="h-4 w-4" /> Paramètres
+                  </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={toggle}>
                   {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
