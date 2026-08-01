@@ -59,6 +59,17 @@ const addDays = (n: number) => {
   return iso(d);
 };
 
+const MOIS = ["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
+const MOIS_COURT = ["janv.","févr.","mars","avr.","mai","juin","juil.","août","sept.","oct.","nov.","déc."];
+const fmtLong = (isoDate: string) => {
+  const [y, m, d] = isoDate.split("-");
+  return `${Number(d)} ${MOIS[Number(m) - 1]} ${y}`;
+};
+const fmtShort = (isoDate: string) => {
+  const [, m, d] = isoDate.split("-");
+  return `${d} ${MOIS_COURT[Number(m) - 1]}`;
+};
+
 const events: Event[] = [
   { date: addDays(0), title: "Audit trimestriel VOIP", client: "Société Générale", site: "Tunis Centre", time: "10:00", type: "audit" },
   { date: addDays(1), title: "Installation bornes WIFI", client: "Hôtel Laico", site: "Hammamet", time: "09:30", type: "install" },
@@ -163,7 +174,7 @@ function DashboardHome() {
                       {events.slice(0, 4).map((e, i) => (
                         <li key={i} className="flex items-center gap-2 text-xs">
                           <span className="w-16 shrink-0 text-muted-foreground">
-                            {new Date(e.date).toLocaleDateString("fr-FR", { day: "2-digit", month: "short" })}
+                            {fmtShort(e.date)}
                           </span>
                           <span className="truncate text-foreground">{e.title}</span>
                           <span className="ml-auto shrink-0 text-muted-foreground">{e.time}</span>
@@ -232,7 +243,7 @@ function DashboardHome() {
             Prochaine intervention préventive
           </h3>
           <p className="mt-2 text-sm text-white/75">
-            Audit trimestriel de votre installation VOIP planifié le {new Date(events[0].date).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}.
+            Audit trimestriel de votre installation VOIP planifié le {fmtLong(events[0].date)}.
           </p>
           <span className="mt-6 inline-flex items-center gap-2 rounded-lg bg-white/10 px-4 py-2 text-sm font-medium ring-1 ring-white/20 backdrop-blur">
             <CalendarDays className="h-4 w-4" />
