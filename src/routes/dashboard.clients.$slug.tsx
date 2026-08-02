@@ -264,6 +264,34 @@ function ClientDetailPage() {
           </ul>
         </section>
 
+        {/* Localisation */}
+        <section className="rounded-2xl border border-border bg-background p-6 shadow-[var(--shadow-soft)] lg:col-span-2">
+          <div className="mb-4 flex items-center gap-2 text-sm font-semibold text-foreground">
+            <MapPin className="h-4 w-4 text-[color:var(--brand-accent)]" />
+            Localisation
+          </div>
+          <div className="overflow-hidden rounded-xl border border-border">
+            <iframe
+              title={`Carte — ${p.name}`}
+              src={mapSrc(p)}
+              loading="lazy"
+              className="h-[280px] w-full border-0"
+            />
+          </div>
+          <div className="mt-3 flex items-center justify-between gap-3 text-sm">
+            <span className="text-muted-foreground">{p.address !== "—" ? p.address : p.city}</span>
+            <a
+              href={`https://www.openstreetmap.org/?mlat=${cityCoords(p.city)[0]}&mlon=${cityCoords(p.city)[1]}#map=15/${cityCoords(p.city)[0]}/${cityCoords(p.city)[1]}`}
+              target="_blank"
+              rel="noreferrer"
+              className="shrink-0 font-medium text-[color:var(--brand-accent)] hover:underline"
+            >
+              Ouvrir la carte
+            </a>
+          </div>
+        </section>
+
+
         {/* Equipment */}
         <section className="rounded-2xl border border-border bg-background p-6 shadow-[var(--shadow-soft)] lg:col-span-2">
           <div className="mb-4 flex items-center gap-2 text-sm font-semibold text-foreground">
