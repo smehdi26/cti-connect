@@ -15,6 +15,8 @@ import {
   CheckCircle2,
   AlertTriangle,
   Info,
+  BarChart3,
+  Users,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import logo from "@/assets/cti-logo.png";
