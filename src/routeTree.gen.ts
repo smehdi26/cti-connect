@@ -19,6 +19,7 @@ import { Route as DashboardTicketsRouteImport } from './routes/dashboard.tickets
 import { Route as DashboardProfilRouteImport } from './routes/dashboard.profil'
 import { Route as DashboardParametresRouteImport } from './routes/dashboard.parametres'
 import { Route as DashboardNotificationsRouteImport } from './routes/dashboard.notifications'
+import { Route as DashboardEquipeRouteImport } from './routes/dashboard.equipe'
 import { Route as DashboardAnalyticsRouteImport } from './routes/dashboard.analytics'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
@@ -78,6 +79,11 @@ const DashboardParametresRoute = DashboardParametresRouteImport.update({
 const DashboardNotificationsRoute = DashboardNotificationsRouteImport.update({
   id: '/notifications',
   path: '/notifications',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardEquipeRoute = DashboardEquipeRouteImport.update({
+  id: '/equipe',
+  path: '/equipe',
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardAnalyticsRoute = DashboardAnalyticsRouteImport.update({
@@ -145,6 +151,7 @@ export interface FileRoutesByFullPath {
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
+  '/dashboard/equipe': typeof DashboardEquipeRoute
   '/dashboard/notifications': typeof DashboardNotificationsRoute
   '/dashboard/parametres': typeof DashboardParametresRoute
   '/dashboard/profil': typeof DashboardProfilRoute
@@ -166,6 +173,7 @@ export interface FileRoutesByTo {
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
+  '/dashboard/equipe': typeof DashboardEquipeRoute
   '/dashboard/notifications': typeof DashboardNotificationsRoute
   '/dashboard/parametres': typeof DashboardParametresRoute
   '/dashboard/profil': typeof DashboardProfilRoute
@@ -189,6 +197,7 @@ export interface FileRoutesById {
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
+  '/dashboard/equipe': typeof DashboardEquipeRoute
   '/dashboard/notifications': typeof DashboardNotificationsRoute
   '/dashboard/parametres': typeof DashboardParametresRoute
   '/dashboard/profil': typeof DashboardProfilRoute
@@ -213,6 +222,7 @@ export interface FileRouteTypes {
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/dashboard/analytics'
+    | '/dashboard/equipe'
     | '/dashboard/notifications'
     | '/dashboard/parametres'
     | '/dashboard/profil'
@@ -234,6 +244,7 @@ export interface FileRouteTypes {
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/dashboard/analytics'
+    | '/dashboard/equipe'
     | '/dashboard/notifications'
     | '/dashboard/parametres'
     | '/dashboard/profil'
@@ -256,6 +267,7 @@ export interface FileRouteTypes {
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/dashboard/analytics'
+    | '/dashboard/equipe'
     | '/dashboard/notifications'
     | '/dashboard/parametres'
     | '/dashboard/profil'
@@ -353,6 +365,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardNotificationsRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/equipe': {
+      id: '/dashboard/equipe'
+      path: '/equipe'
+      fullPath: '/dashboard/equipe'
+      preLoaderRoute: typeof DashboardEquipeRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/analytics': {
       id: '/dashboard/analytics'
       path: '/analytics'
@@ -428,6 +447,7 @@ declare module '@tanstack/react-router' {
 
 interface DashboardRouteChildren {
   DashboardAnalyticsRoute: typeof DashboardAnalyticsRoute
+  DashboardEquipeRoute: typeof DashboardEquipeRoute
   DashboardNotificationsRoute: typeof DashboardNotificationsRoute
   DashboardParametresRoute: typeof DashboardParametresRoute
   DashboardProfilRoute: typeof DashboardProfilRoute
@@ -443,6 +463,7 @@ interface DashboardRouteChildren {
 
 const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardAnalyticsRoute: DashboardAnalyticsRoute,
+  DashboardEquipeRoute: DashboardEquipeRoute,
   DashboardNotificationsRoute: DashboardNotificationsRoute,
   DashboardParametresRoute: DashboardParametresRoute,
   DashboardProfilRoute: DashboardProfilRoute,
