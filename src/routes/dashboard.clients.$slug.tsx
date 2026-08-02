@@ -134,6 +134,28 @@ function fallback(slug: string): Profile {
   };
 }
 
+const CITY_COORDS: Record<string, [number, number]> = {
+  tunis: [36.8065, 10.1815],
+  "ben arous": [36.7533, 10.2189],
+  "tunis-carthage": [36.851, 10.2272],
+  sfax: [34.7406, 10.7603],
+  "les berges du lac": [36.8402, 10.2617],
+  bizerte: [37.2744, 9.8739],
+  hammamet: [36.4, 10.6167],
+  sousse: [35.8256, 10.6084],
+};
+
+function cityCoords(city: string): [number, number] {
+  return CITY_COORDS[city.trim().toLowerCase()] ?? CITY_COORDS.tunis;
+}
+
+function mapSrc(p: Profile) {
+  const [lat, lon] = cityCoords(p.city);
+  const d = 0.02;
+  const bbox = [lon - d, lat - d / 2, lon + d, lat + d / 2].join(",");
+  return `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat},${lon}`;
+}
+
 const statusColor: Record<string, string> = {
   Actif: "bg-emerald-50 text-emerald-700 ring-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-300 dark:ring-emerald-500/30",
   Maintenance: "bg-amber-50 text-amber-700 ring-amber-200 dark:bg-amber-500/10 dark:text-amber-300 dark:ring-amber-500/30",
@@ -263,6 +285,34 @@ function ClientDetailPage() {
             ))}
           </ul>
         </section>
+
+        {/* Localisation */}
+        <section className="rounded-2xl border border-border bg-background p-6 shadow-[var(--shadow-soft)] lg:col-span-2">
+          <div className="mb-4 flex items-center gap-2 text-sm font-semibold text-foreground">
+            <MapPin className="h-4 w-4 text-[color:var(--brand-accent)]" />
+            Localisation
+          </div>
+          <div className="overflow-hidden rounded-xl border border-border">
+            <iframe
+              title={`Carte — ${p.name}`}
+              src={mapSrc(p)}
+              loading="lazy"
+              className="h-[280px] w-full border-0"
+            />
+          </div>
+          <div className="mt-3 flex items-center justify-between gap-3 text-sm">
+            <span className="text-muted-foreground">{p.address !== "—" ? p.address : p.city}</span>
+            <a
+              href={`https://www.openstreetmap.org/?mlat=${cityCoords(p.city)[0]}&mlon=${cityCoords(p.city)[1]}#map=15/${cityCoords(p.city)[0]}/${cityCoords(p.city)[1]}`}
+              target="_blank"
+              rel="noreferrer"
+              className="shrink-0 font-medium text-[color:var(--brand-accent)] hover:underline"
+            >
+              Ouvrir la carte
+            </a>
+          </div>
+        </section>
+
 
         {/* Equipment */}
         <section className="rounded-2xl border border-border bg-background p-6 shadow-[var(--shadow-soft)] lg:col-span-2">
