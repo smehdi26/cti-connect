@@ -134,7 +134,29 @@ function fallback(slug: string): Profile {
   };
 }
 
-const statusColor: Record<string, string> = {
+const CITY_COORDS: Record<string, [number, number]> = {
+  tunis: [36.8065, 10.1815],
+  "ben arous": [36.7533, 10.2189],
+  "tunis-carthage": [36.851, 10.2272],
+  sfax: [34.7406, 10.7603],
+  "les berges du lac": [36.8402, 10.2617],
+  bizerte: [37.2744, 9.8739],
+  hammamet: [36.4, 10.6167],
+  sousse: [35.8256, 10.6084],
+};
+
+function cityCoords(city: string): [number, number] {
+  return CITY_COORDS[city.trim().toLowerCase()] ?? CITY_COORDS.tunis;
+}
+
+function mapSrc(p: Profile) {
+  const [lat, lon] = cityCoords(p.city);
+  const d = 0.02;
+  const bbox = [lon - d, lat - d / 2, lon + d, lat + d / 2].join(",");
+  return `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat},${lon}`;
+}
+
+
   Actif: "bg-emerald-50 text-emerald-700 ring-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-300 dark:ring-emerald-500/30",
   Maintenance: "bg-amber-50 text-amber-700 ring-amber-200 dark:bg-amber-500/10 dark:text-amber-300 dark:ring-amber-500/30",
   "En attente": "bg-slate-100 text-slate-700 ring-slate-200 dark:bg-slate-500/10 dark:text-slate-300 dark:ring-slate-500/30",
