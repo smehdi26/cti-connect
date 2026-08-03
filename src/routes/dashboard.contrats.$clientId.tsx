@@ -130,9 +130,89 @@ function ContratDetailPage() {
             <Button variant="outline" onClick={renew}>
               <RefreshCw className="mr-2 h-4 w-4" /> Renouveler
             </Button>
-            <Button variant="outline" onClick={() => toast.success("Contrat exporté en PDF")}>
-              <Download className="mr-2 h-4 w-4" /> Exporter PDF
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline">
+                  <Download className="mr-2 h-4 w-4" /> Exporter
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel>Exporter le contrat</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => {
+                    const ok = exportPdfSections(
+                      "Contrat de maintenance",
+                      `${contract.contract} — ${contract.clientId}`,
+                      [
+                        {
+                          heading: "Contrat",
+                          pairs: [
+                            ["ID client", contract.clientId],
+                            ["Entreprise", contract.contract],
+                            ["Statut", active ? "Actif" : "Suspendu"],
+                            ["Redevance", contract.redevance],
+                            ["Date de signature", contract.signedAt],
+                            ["Visites / an", String(contract.visits)],
+                            ["Mois des visites", contract.visitMonths.join(", ")],
+                          ] as [string, string][],
+                        },
+                        {
+                          heading: "Calendrier des visites",
+                          table: {
+                            columns: ["Mois", "Type d'intervention"],
+                            rows: contract.visitMonths.map((m) => [m, "Visite préventive planifiée"]),
+                          },
+                        },
+                      ],
+                    );
+                    if (ok) toast.success("Aperçu PDF ouvert — utilisez « Enregistrer en PDF »");
+                    else toast.error("Autorisez les fenêtres pop-up pour générer le PDF");
+                  }}
+                >
+                  <FileText className="mr-2 h-4 w-4" /> PDF (impression)
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => {
+                    exportCsv(
+                      `contrat-${contract.clientId}`,
+                      [
+                        { key: "clientId", label: "ID client" },
+                        { key: "contract", label: "Contrat" },
+                        { key: "redevance", label: "Redevance" },
+                        { key: "signedAt", label: "Date de signature" },
+                        { key: "visits", label: "Visites" },
+                        { key: "visitMonths", label: "Mois des visites" },
+                      ],
+                      [contract],
+                    );
+                    toast.success("Export CSV téléchargé");
+                  }}
+                >
+                  <FileSpreadsheet className="mr-2 h-4 w-4" /> CSV (Excel)
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => {
+                    exportJson(`contrat-${contract.clientId}`, { ...contract, actif: active });
+                    toast.success("Export JSON téléchargé");
+                  }}
+                >
+                  <FileJson className="mr-2 h-4 w-4" /> JSON
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => {
+                    void navigator.clipboard?.writeText(
+                      `${contract.clientId} — ${contract.contract} — ${contract.redevance} — ${contract.visits} visites (${contract.visitMonths.join(", ")})`,
+                    );
+                    toast.success("Résumé copié");
+                  }}
+                >
+                  <Copy className="mr-2 h-4 w-4" /> Copier le résumé
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
             <Button
               variant="outline"
               onClick={() => {
