@@ -338,14 +338,64 @@ function ClientsPage() {
                   </span>
                 </td>
                 <td className="px-5 py-4 text-right">
-                  <Link
-                    to="/dashboard/clients/$slug"
-                    params={{ slug: slugify(c.name) }}
-                    className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-[color:var(--brand-accent)] transition hover:bg-secondary"
-                  >
-                    Voir la fiche <ArrowUpRight className="h-3.5 w-3.5" />
-                  </Link>
+                  <div className="flex items-center justify-end gap-1">
+                    <Link
+                      to="/dashboard/clients/$slug"
+                      params={{ slug: slugify(c.name) }}
+                      className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-[color:var(--brand-accent)] transition hover:bg-secondary"
+                    >
+                      Voir la fiche <ArrowUpRight className="h-3.5 w-3.5" />
+                    </Link>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <button className="rounded-md border border-border p-1.5 text-muted-foreground transition hover:text-foreground">
+                          <MoreHorizontal className="h-3.5 w-3.5" />
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-56">
+                        <DropdownMenuLabel className="truncate">{c.name}</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => exportClientPdf(c)}>
+                          <FileText className="h-4 w-4" /> Exporter la fiche (PDF)
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => exportListCsv([c])}>
+                          <FileSpreadsheet className="h-4 w-4" /> Exporter en CSV
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem asChild>
+                          <a href={`tel:${c.contact.replace(/\s/g, "")}`}>
+                            <Phone className="h-4 w-4" /> Appeler
+                          </a>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <a href={`mailto:contact@${slugify(c.name)}.tn`}>
+                            <Mail className="h-4 w-4" /> Envoyer un email
+                          </a>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link to="/dashboard/carte">
+                            <MapIcon className="h-4 w-4" /> Voir sur la carte
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link to="/dashboard/tickets">
+                            <Ticket className="h-4 w-4" /> Créer un ticket
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          onClick={() => {
+                            void navigator.clipboard?.writeText(c.contact);
+                            toast.success("Téléphone copié");
+                          }}
+                        >
+                          <Copy className="h-4 w-4" /> Copier le téléphone
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 </td>
+
               </tr>
             ))}
             {visible.length === 0 && (
