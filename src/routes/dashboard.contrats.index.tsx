@@ -181,7 +181,34 @@ function ContratsPage() {
         title="Contrats de maintenance"
         description="Suivi des contrats, redevances et calendriers de visites préventives."
         action={
-          <Dialog open={open} onOpenChange={setOpen}>
+          <div className="flex items-center gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="inline-flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 text-sm font-medium text-muted-foreground transition hover:text-foreground">
+                  <Download className="h-4 w-4" /> Exporter
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-52">
+                <DropdownMenuLabel>Exporter {visible.length} contrat(s)</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => contractsPdf(visible)}>
+                  <FileText className="h-4 w-4" /> PDF (impression)
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => contractsCsv(visible)}>
+                  <FileSpreadsheet className="h-4 w-4" /> CSV (Excel)
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => {
+                    exportJson("contrats-cti-network", visible);
+                    toast.success("Export JSON téléchargé");
+                  }}
+                >
+                  <FileJson className="h-4 w-4" /> JSON
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <Dialog open={open} onOpenChange={setOpen}>
+
             <DialogTrigger asChild>
               <button className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-[var(--shadow-soft)] transition hover:opacity-95">
                 <Plus className="h-4 w-4" />
