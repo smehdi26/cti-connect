@@ -77,6 +77,51 @@ function slugify(s: string) {
     .replace(/(^-|-$)/g, "");
 }
 
+const CSV_COLUMNS = [
+  { key: "name" as const, label: "Entreprise" },
+  { key: "sector" as const, label: "Secteur" },
+  { key: "city" as const, label: "Ville" },
+  { key: "contact" as const, label: "Téléphone" },
+  { key: "sites" as const, label: "Sites" },
+  { key: "status" as const, label: "Statut" },
+];
+
+function exportListCsv(rows: Client[]) {
+  exportCsv("clients-cti-network", CSV_COLUMNS, rows);
+  toast.success("Export CSV téléchargé");
+}
+
+function exportListPdf(rows: Client[]) {
+  const ok = exportPdfTable(
+    "Registre des clients",
+    `${rows.length} entreprise(s) — CTI-Network`,
+    CSV_COLUMNS.map((c) => ({ label: c.label })),
+    rows.map((r) => [r.name, r.sector, r.city, r.contact, r.sites, r.status]),
+  );
+  if (ok) toast.success("Aperçu PDF ouvert — utilisez « Enregistrer en PDF »");
+  else toast.error("Autorisez les fenêtres pop-up pour générer le PDF");
+}
+
+function exportClientPdf(c: Client) {
+  const ok = exportPdfSections("Fiche client", c.name, [
+    {
+      heading: "Identité",
+      pairs: [
+        ["Entreprise", c.name],
+        ["Secteur", c.sector],
+        ["Ville", c.city],
+        ["Téléphone", c.contact],
+        ["Sites gérés", String(c.sites)],
+        ["Statut", c.status],
+      ],
+    },
+  ]);
+  if (ok) toast.success("Fiche PDF ouverte");
+  else toast.error("Autorisez les fenêtres pop-up pour générer le PDF");
+}
+
+
+
 function ClientsPage() {
   const [clients, setClients] = useState<Client[]>(initial);
   const [filter, setFilter] = useState<Filter>("Tous");
