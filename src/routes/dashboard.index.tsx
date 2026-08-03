@@ -12,7 +12,10 @@ import {
   CalendarDays,
   MapPin,
   Clock,
+  FileSignature,
 } from "lucide-react";
+import { initialClients, slugifyClient } from "@/lib/clients-data";
+
 import {
   Dialog,
   DialogContent,
