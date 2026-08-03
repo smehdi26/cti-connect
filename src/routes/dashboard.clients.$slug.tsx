@@ -13,8 +13,26 @@ import {
   Ticket,
   Network,
   ShieldCheck,
+  Download,
+  FileText,
+  FileSpreadsheet,
+  FileJson,
+  Copy,
+  Printer,
+  MoreHorizontal,
 } from "lucide-react";
+import { toast } from "sonner";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { exportCsv, exportJson, exportPdfSections } from "@/lib/export-utils";
 import { PageHeader } from "@/components/dashboard/DashboardLayout";
+
 
 export const Route = createFileRoute("/dashboard/clients/$slug")({
   head: ({ params }) => ({
@@ -99,6 +117,80 @@ function slugify(s: string) {
     .replace(/(^-|-$)/g, "");
 }
 
+function profilePdf(p: Profile) {
+  const ok = exportPdfSections("Dossier client", `${p.name} — ${p.id}`, [
+    {
+      heading: "Identité",
+      pairs: [
+        ["Identifiant", p.id],
+        ["Secteur", p.sector],
+        ["Adresse", p.address],
+        ["Ville", p.city],
+        ["Téléphone", p.phone],
+        ["Email", p.email],
+        ["Site web", p.website],
+        ["Représentant légal", p.legalRep],
+        ["Matricule fiscal", p.taxId],
+        ["Effectif", p.headcount],
+        ["Sites gérés", String(p.sites)],
+        ["Statut", p.status],
+      ],
+    },
+    {
+      heading: "Contrat de maintenance",
+      pairs: [
+        ["Redevance", p.contract.redevance],
+        ["Date de signature", p.contract.signedAt],
+        ["Visites / an", String(p.contract.visits)],
+        ["Mois des visites", p.contract.visitMonths.join(", ")],
+      ],
+    },
+    { heading: "Services souscrits", pairs: p.services.map((s, i) => [`Service ${i + 1}`, s]) },
+    {
+      heading: "Contacts techniques",
+      pairs: p.contacts.map((c) => [c.name, `${c.role} — ${c.phone} — ${c.email}`]),
+    },
+    {
+      heading: "Parc d'équipements",
+      pairs: p.equipment.map((e) => [e.name, `${e.count} unité(s) — ${e.type}`]),
+    },
+    {
+      heading: "Historique tickets",
+      pairs: p.tickets.map((t) => [`${t.id} — ${t.date}`, `${t.title} (${t.status})`]),
+    },
+  ]);
+  if (ok) toast.success("Dossier PDF ouvert — utilisez « Enregistrer en PDF »");
+  else toast.error("Autorisez les fenêtres pop-up pour générer le PDF");
+}
+
+function profileCsv(p: Profile) {
+  exportCsv(
+    `equipements-${p.id}`,
+    [
+      { key: "name", label: "Équipement" },
+      { key: "count", label: "Quantité" },
+      { key: "type", label: "Type" },
+    ],
+    p.equipment,
+  );
+  toast.success("Export CSV téléchargé");
+}
+
+function ticketsCsv(p: Profile) {
+  exportCsv(
+    `tickets-${p.id}`,
+    [
+      { key: "id", label: "Réf." },
+      { key: "title", label: "Sujet" },
+      { key: "status", label: "Statut" },
+      { key: "date", label: "Date" },
+    ],
+    p.tickets,
+  );
+  toast.success("Export CSV téléchargé");
+}
+
+
 function fallback(slug: string): Profile {
   const name = slug
     .split("-")
@@ -182,13 +274,90 @@ function ClientDetailPage() {
         title={p.name}
         description={`${p.sector} · ${p.city} · Client depuis ${new Date(p.since).getFullYear()}`}
         action={
-          <span
-            className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ring-1 ring-inset ${statusColor[p.status]}`}
-          >
-            {p.status}
-          </span>
+          <div className="flex items-center gap-2">
+            <span
+              className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ring-1 ring-inset ${statusColor[p.status]}`}
+            >
+              {p.status}
+            </span>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="inline-flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 text-sm font-medium text-muted-foreground transition hover:text-foreground">
+                  <Download className="h-4 w-4" /> Exporter
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel>Exporter la fiche</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => profilePdf(p)}>
+                  <FileText className="h-4 w-4" /> Dossier complet (PDF)
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => profileCsv(p)}>
+                  <FileSpreadsheet className="h-4 w-4" /> Équipements (CSV)
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => ticketsCsv(p)}>
+                  <FileSpreadsheet className="h-4 w-4" /> Tickets (CSV)
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => {
+                    exportJson(`client-${p.id}`, p);
+                    toast.success("Export JSON téléchargé");
+                  }}
+                >
+                  <FileJson className="h-4 w-4" /> Données (JSON)
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-[var(--shadow-soft)] transition hover:opacity-95">
+                  Actions <MoreHorizontal className="h-4 w-4" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuItem asChild>
+                  <Link to="/dashboard/tickets">
+                    <Ticket className="h-4 w-4" /> Créer un ticket
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/dashboard/contrats/$clientId" params={{ clientId: p.id }}>
+                    <FileSignature className="h-4 w-4" /> Voir le contrat
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/dashboard/carte">
+                    <MapPin className="h-4 w-4" /> Localiser sur la carte
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <a href={`tel:${p.phone.replace(/\s/g, "")}`}>
+                    <Phone className="h-4 w-4" /> Appeler le client
+                  </a>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <a href={`mailto:${p.email}`}>
+                    <Mail className="h-4 w-4" /> Envoyer un email
+                  </a>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => {
+                    void navigator.clipboard?.writeText(`${p.name} — ${p.id} — ${p.phone} — ${p.email}`);
+                    toast.success("Coordonnées copiées");
+                  }}
+                >
+                  <Copy className="h-4 w-4" /> Copier les coordonnées
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => window.print()}>
+                  <Printer className="h-4 w-4" /> Imprimer la page
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         }
       />
+
 
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Identity card */}

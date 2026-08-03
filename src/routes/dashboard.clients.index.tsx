@@ -2,7 +2,33 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/dashboard/DashboardLayout";
-import { Building2, Plus, Search, MapPin, Phone, ArrowUpRight } from "lucide-react";
+import {
+  Building2,
+  Plus,
+  Search,
+  MapPin,
+  Phone,
+  ArrowUpRight,
+  Download,
+  FileText,
+  FileSpreadsheet,
+  FileJson,
+  Copy,
+  MoreHorizontal,
+  Mail,
+  Map as MapIcon,
+  Ticket,
+} from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { exportCsv, exportJson, exportPdfTable, exportPdfSections } from "@/lib/export-utils";
+
 import {
   Dialog,
   DialogContent,
@@ -51,6 +77,51 @@ function slugify(s: string) {
     .replace(/(^-|-$)/g, "");
 }
 
+const CSV_COLUMNS = [
+  { key: "name" as const, label: "Entreprise" },
+  { key: "sector" as const, label: "Secteur" },
+  { key: "city" as const, label: "Ville" },
+  { key: "contact" as const, label: "Téléphone" },
+  { key: "sites" as const, label: "Sites" },
+  { key: "status" as const, label: "Statut" },
+];
+
+function exportListCsv(rows: Client[]) {
+  exportCsv("clients-cti-network", CSV_COLUMNS, rows);
+  toast.success("Export CSV téléchargé");
+}
+
+function exportListPdf(rows: Client[]) {
+  const ok = exportPdfTable(
+    "Registre des clients",
+    `${rows.length} entreprise(s) — CTI-Network`,
+    CSV_COLUMNS.map((c) => ({ label: c.label })),
+    rows.map((r) => [r.name, r.sector, r.city, r.contact, r.sites, r.status]),
+  );
+  if (ok) toast.success("Aperçu PDF ouvert — utilisez « Enregistrer en PDF »");
+  else toast.error("Autorisez les fenêtres pop-up pour générer le PDF");
+}
+
+function exportClientPdf(c: Client) {
+  const ok = exportPdfSections("Fiche client", c.name, [
+    {
+      heading: "Identité",
+      pairs: [
+        ["Entreprise", c.name],
+        ["Secteur", c.sector],
+        ["Ville", c.city],
+        ["Téléphone", c.contact],
+        ["Sites gérés", String(c.sites)],
+        ["Statut", c.status],
+      ],
+    },
+  ]);
+  if (ok) toast.success("Fiche PDF ouverte");
+  else toast.error("Autorisez les fenêtres pop-up pour générer le PDF");
+}
+
+
+
 function ClientsPage() {
   const [clients, setClients] = useState<Client[]>(initial);
   const [filter, setFilter] = useState<Filter>("Tous");
@@ -95,7 +166,45 @@ function ClientsPage() {
         title="Clients"
         description="Entreprises accompagnées par CTI-Network."
         action={
-          <Dialog open={open} onOpenChange={setOpen}>
+          <div className="flex items-center gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="inline-flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 text-sm font-medium text-muted-foreground transition hover:text-foreground">
+                  <Download className="h-4 w-4" /> Exporter
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-52">
+                <DropdownMenuLabel>Exporter {visible.length} client(s)</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => exportListPdf(visible)}>
+                  <FileText className="h-4 w-4" /> PDF (impression)
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => exportListCsv(visible)}>
+                  <FileSpreadsheet className="h-4 w-4" /> CSV (Excel)
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => {
+                    exportJson("clients-cti-network", visible);
+                    toast.success("Export JSON téléchargé");
+                  }}
+                >
+                  <FileJson className="h-4 w-4" /> JSON
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => {
+                    void navigator.clipboard?.writeText(
+                      visible.map((c) => `${c.name};${c.sector};${c.city};${c.contact}`).join("\n"),
+                    );
+                    toast.success("Liste copiée dans le presse-papiers");
+                  }}
+                >
+                  <Copy className="h-4 w-4" /> Copier la liste
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <Dialog open={open} onOpenChange={setOpen}>
+
             <DialogTrigger asChild>
               <button className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-[var(--shadow-soft)] transition hover:opacity-95">
                 <Plus className="h-4 w-4" />
@@ -152,7 +261,9 @@ function ClientsPage() {
               </form>
             </DialogContent>
           </Dialog>
+          </div>
         }
+
       />
 
       <div className="mb-4 flex flex-wrap items-center gap-3">
@@ -227,14 +338,64 @@ function ClientsPage() {
                   </span>
                 </td>
                 <td className="px-5 py-4 text-right">
-                  <Link
-                    to="/dashboard/clients/$slug"
-                    params={{ slug: slugify(c.name) }}
-                    className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-[color:var(--brand-accent)] transition hover:bg-secondary"
-                  >
-                    Voir la fiche <ArrowUpRight className="h-3.5 w-3.5" />
-                  </Link>
+                  <div className="flex items-center justify-end gap-1">
+                    <Link
+                      to="/dashboard/clients/$slug"
+                      params={{ slug: slugify(c.name) }}
+                      className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-[color:var(--brand-accent)] transition hover:bg-secondary"
+                    >
+                      Voir la fiche <ArrowUpRight className="h-3.5 w-3.5" />
+                    </Link>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <button className="rounded-md border border-border p-1.5 text-muted-foreground transition hover:text-foreground">
+                          <MoreHorizontal className="h-3.5 w-3.5" />
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-56">
+                        <DropdownMenuLabel className="truncate">{c.name}</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => exportClientPdf(c)}>
+                          <FileText className="h-4 w-4" /> Exporter la fiche (PDF)
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => exportListCsv([c])}>
+                          <FileSpreadsheet className="h-4 w-4" /> Exporter en CSV
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem asChild>
+                          <a href={`tel:${c.contact.replace(/\s/g, "")}`}>
+                            <Phone className="h-4 w-4" /> Appeler
+                          </a>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <a href={`mailto:contact@${slugify(c.name)}.tn`}>
+                            <Mail className="h-4 w-4" /> Envoyer un email
+                          </a>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link to="/dashboard/carte">
+                            <MapIcon className="h-4 w-4" /> Voir sur la carte
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link to="/dashboard/tickets">
+                            <Ticket className="h-4 w-4" /> Créer un ticket
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          onClick={() => {
+                            void navigator.clipboard?.writeText(c.contact);
+                            toast.success("Téléphone copié");
+                          }}
+                        >
+                          <Copy className="h-4 w-4" /> Copier le téléphone
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 </td>
+
               </tr>
             ))}
             {visible.length === 0 && (

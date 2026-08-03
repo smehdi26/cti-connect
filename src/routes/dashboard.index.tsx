@@ -12,7 +12,10 @@ import {
   CalendarDays,
   MapPin,
   Clock,
+  FileSignature,
 } from "lucide-react";
+import { initialClients, slugifyClient } from "@/lib/clients-data";
+
 import {
   Dialog,
   DialogContent,
@@ -35,12 +38,36 @@ const stats = [
   { label: "Disponibilité", value: "99.8%", delta: "30 derniers jours", icon: TrendingUp, to: "/dashboard" as const },
 ];
 
+const sla = [
+  { label: "Tickets résolus sous 4 h", value: 92 },
+  { label: "Visites préventives réalisées", value: 78 },
+  { label: "Disponibilité réseau", value: 99 },
+];
+
+const priorities = [
+  { label: "Urgente", count: 3, dot: "bg-red-500", bar: "bg-red-500" },
+  { label: "Haute", count: 6, dot: "bg-amber-500", bar: "bg-amber-500" },
+  { label: "Normale", count: 8, dot: "bg-blue-500", bar: "bg-blue-500" },
+  { label: "Basse", count: 4, dot: "bg-slate-400", bar: "bg-slate-400" },
+];
+
+const topClients = [...initialClients].sort((a, b) => b.sites - a.sites).slice(0, 5);
+const maxSites = topClients[0]?.sites || 1;
+
+const quickActions = [
+  { label: "Nouveau ticket", desc: "Créer une demande de support", icon: Ticket, to: "/dashboard/tickets" as const },
+  { label: "Ajouter un client", desc: "Enregistrer une entreprise", icon: Building2, to: "/dashboard/clients" as const },
+  { label: "Carte des sites", desc: "Localiser les installations", icon: MapPin, to: "/dashboard/carte" as const },
+  { label: "Contrats", desc: "Suivre redevances et visites", icon: FileSignature, to: "/dashboard/contrats" as const },
+];
+
 const activity = [
   { type: "ok", text: "Installation VOIP finalisée — SocGen Tunis", time: "il y a 2 h" },
   { type: "warn", text: "Alerte fibre optique — Site Sfax B", time: "il y a 4 h" },
   { type: "ok", text: "Maintenance préventive — Poste Analog. Lot 12", time: "hier" },
   { type: "ok", text: "Ticket #4821 résolu — Configuration DECT", time: "hier" },
 ];
+
 
 type Event = {
   date: string; // YYYY-MM-DD
@@ -211,7 +238,106 @@ function DashboardHome() {
         ))}
       </div>
 
+      {/* Highlights */}
+      <div className="mt-6 grid gap-6 lg:grid-cols-3">
+        <section className="rounded-2xl border border-border bg-background p-6 shadow-[var(--shadow-soft)]">
+          <h2 className="font-display text-base font-semibold">Engagements SLA</h2>
+          <p className="mt-1 text-xs text-muted-foreground">Mois en cours</p>
+          <div className="mt-4 space-y-4">
+            {sla.map((s) => (
+              <div key={s.label}>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">{s.label}</span>
+                  <span className="font-medium text-foreground">{s.value}%</span>
+                </div>
+                <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-secondary">
+                  <div
+                    className="h-full rounded-full"
+                    style={{ width: `${s.value}%`, background: "var(--gradient-brand)" }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="rounded-2xl border border-border bg-background p-6 shadow-[var(--shadow-soft)]">
+          <div className="flex items-center justify-between">
+            <h2 className="font-display text-base font-semibold">Tickets par priorité</h2>
+            <Link to="/dashboard/tickets" className="text-xs font-medium text-[color:var(--brand-accent)] hover:underline">
+              Ouvrir
+            </Link>
+          </div>
+          <ul className="mt-4 space-y-3">
+            {priorities.map((p) => (
+              <li key={p.label} className="flex items-center gap-3">
+                <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${p.dot}`} />
+                <span className="flex-1 text-sm text-foreground">{p.label}</span>
+                <span className="font-display text-lg font-semibold">{p.count}</span>
+              </li>
+            ))}
+          </ul>
+          <div className="mt-4 flex h-2 overflow-hidden rounded-full">
+            {priorities.map((p) => (
+              <div key={p.label} className={p.bar} style={{ flex: p.count }} />
+            ))}
+          </div>
+        </section>
+
+        <section className="rounded-2xl border border-border bg-background p-6 shadow-[var(--shadow-soft)]">
+          <div className="flex items-center justify-between">
+            <h2 className="font-display text-base font-semibold">Top clients — sites</h2>
+            <Link to="/dashboard/carte" className="text-xs font-medium text-[color:var(--brand-accent)] hover:underline">
+              Carte
+            </Link>
+          </div>
+          <ul className="mt-4 space-y-3">
+            {topClients.map((c) => (
+              <li key={c.name}>
+                <div className="flex items-center justify-between text-sm">
+                  <Link
+                    to="/dashboard/clients/$slug"
+                    params={{ slug: slugifyClient(c.name) }}
+                    className="truncate font-medium text-foreground hover:underline"
+                  >
+                    {c.name}
+                  </Link>
+                  <span className="ml-2 shrink-0 text-muted-foreground">{c.sites}</span>
+                </div>
+                <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-secondary">
+                  <div
+                    className="h-full rounded-full bg-[color:var(--brand-accent)]"
+                    style={{ width: `${(c.sites / maxSites) * 100}%` }}
+                  />
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      </div>
+
+      {/* Quick actions */}
+      <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {quickActions.map((a) => (
+          <Link
+            key={a.label}
+            to={a.to}
+            className="group flex items-center gap-3 rounded-xl border border-border bg-background p-4 transition hover:border-[color:var(--brand-accent)] hover:bg-secondary/40"
+          >
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-secondary text-[color:var(--brand-deep)]">
+              <a.icon className="h-4 w-4" />
+            </div>
+            <div className="min-w-0">
+              <div className="text-sm font-medium text-foreground">{a.label}</div>
+              <div className="truncate text-xs text-muted-foreground">{a.desc}</div>
+            </div>
+            <ArrowUpRight className="ml-auto h-4 w-4 shrink-0 text-muted-foreground transition group-hover:text-foreground" />
+          </Link>
+        ))}
+      </div>
+
       <div className="mt-8 grid gap-6 lg:grid-cols-3">
+
         <div className="lg:col-span-2 rounded-2xl border border-border bg-background p-6">
           <h2 className="font-display text-lg font-semibold">Activité récente</h2>
           <ul className="mt-4 divide-y divide-border">

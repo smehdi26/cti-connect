@@ -17,6 +17,7 @@ import {
   Info,
   BarChart3,
   Users,
+  Map,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import logo from "@/assets/cti-logo.png";
@@ -35,9 +36,11 @@ const nav = [
   { to: "/dashboard/tickets", label: "Tickets", icon: Ticket, exact: false },
   { to: "/dashboard/equipements", label: "Équipements", icon: Cpu, exact: false },
   { to: "/dashboard/contrats", label: "Contrats", icon: FileSignature, exact: false },
+  { to: "/dashboard/carte", label: "Carte", icon: Map, exact: false },
   { to: "/dashboard/analytics", label: "Analytics", icon: BarChart3, exact: false },
   { to: "/dashboard/equipe", label: "Équipe", icon: Users, exact: false },
 ] as const;
+
 
 const notifications = [
   { type: "warn", title: "Alerte fibre optique", desc: "Site Sfax B — perte de signal", time: "il y a 12 min" },

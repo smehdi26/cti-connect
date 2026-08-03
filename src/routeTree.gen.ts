@@ -20,6 +20,7 @@ import { Route as DashboardProfilRouteImport } from './routes/dashboard.profil'
 import { Route as DashboardParametresRouteImport } from './routes/dashboard.parametres'
 import { Route as DashboardNotificationsRouteImport } from './routes/dashboard.notifications'
 import { Route as DashboardEquipeRouteImport } from './routes/dashboard.equipe'
+import { Route as DashboardCarteRouteImport } from './routes/dashboard.carte'
 import { Route as DashboardAnalyticsRouteImport } from './routes/dashboard.analytics'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
@@ -84,6 +85,11 @@ const DashboardNotificationsRoute = DashboardNotificationsRouteImport.update({
 const DashboardEquipeRoute = DashboardEquipeRouteImport.update({
   id: '/equipe',
   path: '/equipe',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardCarteRoute = DashboardCarteRouteImport.update({
+  id: '/carte',
+  path: '/carte',
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardAnalyticsRoute = DashboardAnalyticsRouteImport.update({
@@ -151,6 +157,7 @@ export interface FileRoutesByFullPath {
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
+  '/dashboard/carte': typeof DashboardCarteRoute
   '/dashboard/equipe': typeof DashboardEquipeRoute
   '/dashboard/notifications': typeof DashboardNotificationsRoute
   '/dashboard/parametres': typeof DashboardParametresRoute
@@ -173,6 +180,7 @@ export interface FileRoutesByTo {
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
+  '/dashboard/carte': typeof DashboardCarteRoute
   '/dashboard/equipe': typeof DashboardEquipeRoute
   '/dashboard/notifications': typeof DashboardNotificationsRoute
   '/dashboard/parametres': typeof DashboardParametresRoute
@@ -197,6 +205,7 @@ export interface FileRoutesById {
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
+  '/dashboard/carte': typeof DashboardCarteRoute
   '/dashboard/equipe': typeof DashboardEquipeRoute
   '/dashboard/notifications': typeof DashboardNotificationsRoute
   '/dashboard/parametres': typeof DashboardParametresRoute
@@ -222,6 +231,7 @@ export interface FileRouteTypes {
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/dashboard/analytics'
+    | '/dashboard/carte'
     | '/dashboard/equipe'
     | '/dashboard/notifications'
     | '/dashboard/parametres'
@@ -244,6 +254,7 @@ export interface FileRouteTypes {
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/dashboard/analytics'
+    | '/dashboard/carte'
     | '/dashboard/equipe'
     | '/dashboard/notifications'
     | '/dashboard/parametres'
@@ -267,6 +278,7 @@ export interface FileRouteTypes {
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/dashboard/analytics'
+    | '/dashboard/carte'
     | '/dashboard/equipe'
     | '/dashboard/notifications'
     | '/dashboard/parametres'
@@ -372,6 +384,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardEquipeRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/carte': {
+      id: '/dashboard/carte'
+      path: '/carte'
+      fullPath: '/dashboard/carte'
+      preLoaderRoute: typeof DashboardCarteRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/analytics': {
       id: '/dashboard/analytics'
       path: '/analytics'
@@ -447,6 +466,7 @@ declare module '@tanstack/react-router' {
 
 interface DashboardRouteChildren {
   DashboardAnalyticsRoute: typeof DashboardAnalyticsRoute
+  DashboardCarteRoute: typeof DashboardCarteRoute
   DashboardEquipeRoute: typeof DashboardEquipeRoute
   DashboardNotificationsRoute: typeof DashboardNotificationsRoute
   DashboardParametresRoute: typeof DashboardParametresRoute
@@ -463,6 +483,7 @@ interface DashboardRouteChildren {
 
 const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardAnalyticsRoute: DashboardAnalyticsRoute,
+  DashboardCarteRoute: DashboardCarteRoute,
   DashboardEquipeRoute: DashboardEquipeRoute,
   DashboardNotificationsRoute: DashboardNotificationsRoute,
   DashboardParametresRoute: DashboardParametresRoute,

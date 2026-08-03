@@ -2,7 +2,30 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/dashboard/DashboardLayout";
-import { FileSignature, Plus, Search, Calendar, Building2, ChevronRight } from "lucide-react";
+import {
+  FileSignature,
+  Plus,
+  Search,
+  Calendar,
+  Building2,
+  ChevronRight,
+  Download,
+  FileText,
+  FileSpreadsheet,
+  FileJson,
+  Copy,
+  MoreHorizontal,
+} from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { exportCsv, exportJson, exportPdfTable, exportPdfSections } from "@/lib/export-utils";
+
 import {
   Dialog,
   DialogContent,
@@ -39,6 +62,50 @@ export const Route = createFileRoute("/dashboard/contrats/")({
 });
 
 const initial = initialContracts;
+
+const CONTRACT_COLUMNS = [
+
+  { key: "clientId" as const, label: "ID client" },
+  { key: "contract" as const, label: "Contrat" },
+  { key: "redevance" as const, label: "Redevance" },
+  { key: "signedAt" as const, label: "Date de signature" },
+  { key: "visits" as const, label: "Visites" },
+  { key: "visitMonths" as const, label: "Mois des visites" },
+];
+
+function contractsCsv(rows: Contract[]) {
+  exportCsv("contrats-cti-network", CONTRACT_COLUMNS, rows);
+  toast.success("Export CSV téléchargé");
+}
+
+function contractsPdf(rows: Contract[]) {
+  const ok = exportPdfTable(
+    "Contrats de maintenance",
+    `${rows.length} contrat(s) — CTI-Network`,
+    CONTRACT_COLUMNS.map((c) => ({ label: c.label })),
+    rows.map((r) => [r.clientId, r.contract, r.redevance, r.signedAt, r.visits, r.visitMonths.join(" / ")]),
+  );
+  if (ok) toast.success("Aperçu PDF ouvert — utilisez « Enregistrer en PDF »");
+  else toast.error("Autorisez les fenêtres pop-up pour générer le PDF");
+}
+
+function contractPdf(r: Contract) {
+  const ok = exportPdfSections("Contrat de maintenance", `${r.contract} — ${r.clientId}`, [
+    {
+      heading: "Contrat",
+      pairs: [
+        ["ID client", r.clientId],
+        ["Entreprise", r.contract],
+        ["Redevance", r.redevance],
+        ["Date de signature", r.signedAt],
+        ["Visites / an", String(r.visits)],
+        ["Mois des visites", r.visitMonths.join(", ")],
+      ] as [string, string][],
+    },
+  ]);
+  if (ok) toast.success("Contrat PDF ouvert");
+  else toast.error("Autorisez les fenêtres pop-up pour générer le PDF");
+}
 
 
 function ContratsPage() {
@@ -114,7 +181,34 @@ function ContratsPage() {
         title="Contrats de maintenance"
         description="Suivi des contrats, redevances et calendriers de visites préventives."
         action={
-          <Dialog open={open} onOpenChange={setOpen}>
+          <div className="flex items-center gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="inline-flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 text-sm font-medium text-muted-foreground transition hover:text-foreground">
+                  <Download className="h-4 w-4" /> Exporter
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-52">
+                <DropdownMenuLabel>Exporter {visible.length} contrat(s)</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => contractsPdf(visible)}>
+                  <FileText className="h-4 w-4" /> PDF (impression)
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => contractsCsv(visible)}>
+                  <FileSpreadsheet className="h-4 w-4" /> CSV (Excel)
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => {
+                    exportJson("contrats-cti-network", visible);
+                    toast.success("Export JSON téléchargé");
+                  }}
+                >
+                  <FileJson className="h-4 w-4" /> JSON
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <Dialog open={open} onOpenChange={setOpen}>
+
             <DialogTrigger asChild>
               <button className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-[var(--shadow-soft)] transition hover:opacity-95">
                 <Plus className="h-4 w-4" />
@@ -222,7 +316,9 @@ function ContratsPage() {
               </form>
             </DialogContent>
           </Dialog>
+          </div>
         }
+
       />
 
       <div className="mb-4 flex flex-wrap items-center gap-3">
@@ -289,14 +385,53 @@ function ContratsPage() {
                   </div>
                 </td>
                 <td className="px-5 py-4 text-right">
-                  <Link
-                    to="/dashboard/contrats/$clientId"
-                    params={{ clientId: r.clientId }}
-                    className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-[color:var(--brand-deep)] transition hover:bg-secondary"
-                  >
-                    Détails <ChevronRight className="h-3.5 w-3.5" />
-                  </Link>
+                  <div className="flex items-center justify-end gap-1">
+                    <Link
+                      to="/dashboard/contrats/$clientId"
+                      params={{ clientId: r.clientId }}
+                      className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-[color:var(--brand-deep)] transition hover:bg-secondary"
+                    >
+                      Détails <ChevronRight className="h-3.5 w-3.5" />
+                    </Link>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <button className="rounded-md border border-border p-1.5 text-muted-foreground transition hover:text-foreground">
+                          <MoreHorizontal className="h-3.5 w-3.5" />
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-56">
+                        <DropdownMenuLabel className="truncate">{r.contract}</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => contractPdf(r)}>
+                          <FileText className="h-4 w-4" /> Exporter le contrat (PDF)
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => contractsCsv([r])}>
+                          <FileSpreadsheet className="h-4 w-4" /> Exporter en CSV
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => {
+                            exportJson(`contrat-${r.clientId}`, r);
+                            toast.success("Export JSON téléchargé");
+                          }}
+                        >
+                          <FileJson className="h-4 w-4" /> Exporter en JSON
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          onClick={() => {
+                            void navigator.clipboard?.writeText(
+                              `${r.clientId} — ${r.contract} — ${r.redevance} — ${r.visits} visites (${r.visitMonths.join(", ")})`,
+                            );
+                            toast.success("Contrat copié");
+                          }}
+                        >
+                          <Copy className="h-4 w-4" /> Copier le résumé
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 </td>
+
               </tr>
             ))}
             {visible.length === 0 && (
