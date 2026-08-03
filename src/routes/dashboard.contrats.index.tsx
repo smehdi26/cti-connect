@@ -385,14 +385,53 @@ function ContratsPage() {
                   </div>
                 </td>
                 <td className="px-5 py-4 text-right">
-                  <Link
-                    to="/dashboard/contrats/$clientId"
-                    params={{ clientId: r.clientId }}
-                    className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-[color:var(--brand-deep)] transition hover:bg-secondary"
-                  >
-                    Détails <ChevronRight className="h-3.5 w-3.5" />
-                  </Link>
+                  <div className="flex items-center justify-end gap-1">
+                    <Link
+                      to="/dashboard/contrats/$clientId"
+                      params={{ clientId: r.clientId }}
+                      className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-[color:var(--brand-deep)] transition hover:bg-secondary"
+                    >
+                      Détails <ChevronRight className="h-3.5 w-3.5" />
+                    </Link>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <button className="rounded-md border border-border p-1.5 text-muted-foreground transition hover:text-foreground">
+                          <MoreHorizontal className="h-3.5 w-3.5" />
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-56">
+                        <DropdownMenuLabel className="truncate">{r.contract}</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => contractPdf(r)}>
+                          <FileText className="h-4 w-4" /> Exporter le contrat (PDF)
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => contractsCsv([r])}>
+                          <FileSpreadsheet className="h-4 w-4" /> Exporter en CSV
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => {
+                            exportJson(`contrat-${r.clientId}`, r);
+                            toast.success("Export JSON téléchargé");
+                          }}
+                        >
+                          <FileJson className="h-4 w-4" /> Exporter en JSON
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          onClick={() => {
+                            void navigator.clipboard?.writeText(
+                              `${r.clientId} — ${r.contract} — ${r.redevance} — ${r.visits} visites (${r.visitMonths.join(", ")})`,
+                            );
+                            toast.success("Contrat copié");
+                          }}
+                        >
+                          <Copy className="h-4 w-4" /> Copier le résumé
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 </td>
+
               </tr>
             ))}
             {visible.length === 0 && (
