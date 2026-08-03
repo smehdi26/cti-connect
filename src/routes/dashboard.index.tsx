@@ -35,12 +35,36 @@ const stats = [
   { label: "Disponibilité", value: "99.8%", delta: "30 derniers jours", icon: TrendingUp, to: "/dashboard" as const },
 ];
 
+const sla = [
+  { label: "Tickets résolus sous 4 h", value: 92 },
+  { label: "Visites préventives réalisées", value: 78 },
+  { label: "Disponibilité réseau", value: 99 },
+];
+
+const priorities = [
+  { label: "Urgente", count: 3, dot: "bg-red-500", bar: "bg-red-500" },
+  { label: "Haute", count: 6, dot: "bg-amber-500", bar: "bg-amber-500" },
+  { label: "Normale", count: 8, dot: "bg-blue-500", bar: "bg-blue-500" },
+  { label: "Basse", count: 4, dot: "bg-slate-400", bar: "bg-slate-400" },
+];
+
+const topClients = [...initialClients].sort((a, b) => b.sites - a.sites).slice(0, 5);
+const maxSites = topClients[0]?.sites || 1;
+
+const quickActions = [
+  { label: "Nouveau ticket", desc: "Créer une demande de support", icon: Ticket, to: "/dashboard/tickets" as const },
+  { label: "Ajouter un client", desc: "Enregistrer une entreprise", icon: Building2, to: "/dashboard/clients" as const },
+  { label: "Carte des sites", desc: "Localiser les installations", icon: MapPin, to: "/dashboard/carte" as const },
+  { label: "Contrats", desc: "Suivre redevances et visites", icon: FileSignature, to: "/dashboard/contrats" as const },
+];
+
 const activity = [
   { type: "ok", text: "Installation VOIP finalisée — SocGen Tunis", time: "il y a 2 h" },
   { type: "warn", text: "Alerte fibre optique — Site Sfax B", time: "il y a 4 h" },
   { type: "ok", text: "Maintenance préventive — Poste Analog. Lot 12", time: "hier" },
   { type: "ok", text: "Ticket #4821 résolu — Configuration DECT", time: "hier" },
 ];
+
 
 type Event = {
   date: string; // YYYY-MM-DD
