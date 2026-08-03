@@ -2,7 +2,30 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/dashboard/DashboardLayout";
-import { FileSignature, Plus, Search, Calendar, Building2, ChevronRight } from "lucide-react";
+import {
+  FileSignature,
+  Plus,
+  Search,
+  Calendar,
+  Building2,
+  ChevronRight,
+  Download,
+  FileText,
+  FileSpreadsheet,
+  FileJson,
+  Copy,
+  MoreHorizontal,
+} from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { exportCsv, exportJson, exportPdfTable, exportPdfSections } from "@/lib/export-utils";
+
 import {
   Dialog,
   DialogContent,
