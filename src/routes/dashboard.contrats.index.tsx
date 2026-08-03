@@ -60,7 +60,11 @@ export const Route = createFileRoute("/dashboard/contrats/")({
   }),
   component: ContratsPage,
 });
+
+const initial = initialContracts;
+
 const CONTRACT_COLUMNS = [
+
   { key: "clientId" as const, label: "ID client" },
   { key: "contract" as const, label: "Contrat" },
   { key: "redevance" as const, label: "Redevance" },
