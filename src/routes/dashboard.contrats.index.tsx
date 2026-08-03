@@ -60,8 +60,48 @@ export const Route = createFileRoute("/dashboard/contrats/")({
   }),
   component: ContratsPage,
 });
+const CONTRACT_COLUMNS = [
+  { key: "clientId" as const, label: "ID client" },
+  { key: "contract" as const, label: "Contrat" },
+  { key: "redevance" as const, label: "Redevance" },
+  { key: "signedAt" as const, label: "Date de signature" },
+  { key: "visits" as const, label: "Visites" },
+  { key: "visitMonths" as const, label: "Mois des visites" },
+];
 
-const initial = initialContracts;
+function contractsCsv(rows: Contract[]) {
+  exportCsv("contrats-cti-network", CONTRACT_COLUMNS, rows);
+  toast.success("Export CSV téléchargé");
+}
+
+function contractsPdf(rows: Contract[]) {
+  const ok = exportPdfTable(
+    "Contrats de maintenance",
+    `${rows.length} contrat(s) — CTI-Network`,
+    CONTRACT_COLUMNS.map((c) => ({ label: c.label })),
+    rows.map((r) => [r.clientId, r.contract, r.redevance, r.signedAt, r.visits, r.visitMonths.join(" / ")]),
+  );
+  if (ok) toast.success("Aperçu PDF ouvert — utilisez « Enregistrer en PDF »");
+  else toast.error("Autorisez les fenêtres pop-up pour générer le PDF");
+}
+
+function contractPdf(r: Contract) {
+  const ok = exportPdfSections("Contrat de maintenance", `${r.contract} — ${r.clientId}`, [
+    {
+      heading: "Contrat",
+      pairs: [
+        ["ID client", r.clientId],
+        ["Entreprise", r.contract],
+        ["Redevance", r.redevance],
+        ["Date de signature", r.signedAt],
+        ["Visites / an", String(r.visits)],
+        ["Mois des visites", r.visitMonths.join(", ")],
+      ] as [string, string][],
+    },
+  ]);
+  if (ok) toast.success("Contrat PDF ouvert");
+  else toast.error("Autorisez les fenêtres pop-up pour générer le PDF");
+}
 
 
 function ContratsPage() {
