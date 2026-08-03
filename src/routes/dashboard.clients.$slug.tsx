@@ -13,8 +13,26 @@ import {
   Ticket,
   Network,
   ShieldCheck,
+  Download,
+  FileText,
+  FileSpreadsheet,
+  FileJson,
+  Copy,
+  Printer,
+  MoreHorizontal,
 } from "lucide-react";
+import { toast } from "sonner";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { exportCsv, exportJson, exportPdfSections } from "@/lib/export-utils";
 import { PageHeader } from "@/components/dashboard/DashboardLayout";
+
 
 export const Route = createFileRoute("/dashboard/clients/$slug")({
   head: ({ params }) => ({
