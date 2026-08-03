@@ -14,8 +14,22 @@ import {
   CheckCircle2,
   CalendarClock,
   Wallet,
+  FileText,
+  FileSpreadsheet,
+  FileJson,
+  Copy,
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { exportCsv, exportJson, exportPdfSections } from "@/lib/export-utils";
 import { PageHeader } from "@/components/dashboard/DashboardLayout";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
