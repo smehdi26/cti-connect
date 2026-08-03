@@ -117,6 +117,80 @@ function slugify(s: string) {
     .replace(/(^-|-$)/g, "");
 }
 
+function profilePdf(p: Profile) {
+  const ok = exportPdfSections("Dossier client", `${p.name} — ${p.id}`, [
+    {
+      heading: "Identité",
+      pairs: [
+        ["Identifiant", p.id],
+        ["Secteur", p.sector],
+        ["Adresse", p.address],
+        ["Ville", p.city],
+        ["Téléphone", p.phone],
+        ["Email", p.email],
+        ["Site web", p.website],
+        ["Représentant légal", p.legalRep],
+        ["Matricule fiscal", p.taxId],
+        ["Effectif", p.headcount],
+        ["Sites gérés", String(p.sites)],
+        ["Statut", p.status],
+      ],
+    },
+    {
+      heading: "Contrat de maintenance",
+      pairs: [
+        ["Redevance", p.contract.redevance],
+        ["Date de signature", p.contract.signedAt],
+        ["Visites / an", String(p.contract.visits)],
+        ["Mois des visites", p.contract.visitMonths.join(", ")],
+      ],
+    },
+    { heading: "Services souscrits", pairs: p.services.map((s, i) => [`Service ${i + 1}`, s]) },
+    {
+      heading: "Contacts techniques",
+      pairs: p.contacts.map((c) => [c.name, `${c.role} — ${c.phone} — ${c.email}`]),
+    },
+    {
+      heading: "Parc d'équipements",
+      pairs: p.equipment.map((e) => [e.name, `${e.count} unité(s) — ${e.type}`]),
+    },
+    {
+      heading: "Historique tickets",
+      pairs: p.tickets.map((t) => [`${t.id} — ${t.date}`, `${t.title} (${t.status})`]),
+    },
+  ]);
+  if (ok) toast.success("Dossier PDF ouvert — utilisez « Enregistrer en PDF »");
+  else toast.error("Autorisez les fenêtres pop-up pour générer le PDF");
+}
+
+function profileCsv(p: Profile) {
+  exportCsv(
+    `equipements-${p.id}`,
+    [
+      { key: "name", label: "Équipement" },
+      { key: "count", label: "Quantité" },
+      { key: "type", label: "Type" },
+    ],
+    p.equipment,
+  );
+  toast.success("Export CSV téléchargé");
+}
+
+function ticketsCsv(p: Profile) {
+  exportCsv(
+    `tickets-${p.id}`,
+    [
+      { key: "id", label: "Réf." },
+      { key: "title", label: "Sujet" },
+      { key: "status", label: "Statut" },
+      { key: "date", label: "Date" },
+    ],
+    p.tickets,
+  );
+  toast.success("Export CSV téléchargé");
+}
+
+
 function fallback(slug: string): Profile {
   const name = slug
     .split("-")
