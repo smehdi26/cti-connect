@@ -22,14 +22,17 @@ import { Route as DashboardNotificationsRouteImport } from './routes/dashboard.n
 import { Route as DashboardEquipeRouteImport } from './routes/dashboard.equipe'
 import { Route as DashboardCarteRouteImport } from './routes/dashboard.carte'
 import { Route as DashboardAnalyticsRouteImport } from './routes/dashboard.analytics'
+import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as DashboardEquipementsIndexRouteImport } from './routes/dashboard.equipements.index'
 import { Route as DashboardContratsIndexRouteImport } from './routes/dashboard.contrats.index'
 import { Route as DashboardClientsIndexRouteImport } from './routes/dashboard.clients.index'
+import { Route as DashboardChatbotIndexRouteImport } from './routes/dashboard.chatbot.index'
 import { Route as DashboardEquipementsRefRouteImport } from './routes/dashboard.equipements.$ref'
 import { Route as DashboardContratsClientIdRouteImport } from './routes/dashboard.contrats.$clientId'
 import { Route as DashboardClientsSlugRouteImport } from './routes/dashboard.clients.$slug'
+import { Route as DashboardChatbotThreadIdRouteImport } from './routes/dashboard.chatbot.$threadId'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 
 const SignupRoute = SignupRouteImport.update({
@@ -97,6 +100,11 @@ const DashboardAnalyticsRoute = DashboardAnalyticsRouteImport.update({
   path: '/analytics',
   getParentRoute: () => DashboardRoute,
 } as any)
+const ApiChatRoute = ApiChatRouteImport.update({
+  id: '/api/chat',
+  path: '/api/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const Char91DotwellKnownChar93OauthProtectedResourceRoute =
   Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
     id: '/.well-known/oauth-protected-resource',
@@ -125,6 +133,11 @@ const DashboardClientsIndexRoute = DashboardClientsIndexRouteImport.update({
   path: '/clients/',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardChatbotIndexRoute = DashboardChatbotIndexRouteImport.update({
+  id: '/chatbot/',
+  path: '/chatbot/',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardEquipementsRefRoute = DashboardEquipementsRefRouteImport.update({
   id: '/equipements/$ref',
   path: '/equipements/$ref',
@@ -141,6 +154,12 @@ const DashboardClientsSlugRoute = DashboardClientsSlugRouteImport.update({
   path: '/clients/$slug',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardChatbotThreadIdRoute =
+  DashboardChatbotThreadIdRouteImport.update({
+    id: '/chatbot/$threadId',
+    path: '/chatbot/$threadId',
+    getParentRoute: () => DashboardRoute,
+  } as any)
 const Char91DotmcpChar93InvokeToolToolRoute =
   Char91DotmcpChar93InvokeToolToolRouteImport.update({
     id: '/.mcp/invoke-tool/$tool',
@@ -156,6 +175,7 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/api/chat': typeof ApiChatRoute
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
   '/dashboard/carte': typeof DashboardCarteRoute
   '/dashboard/equipe': typeof DashboardEquipeRoute
@@ -165,9 +185,11 @@ export interface FileRoutesByFullPath {
   '/dashboard/tickets': typeof DashboardTicketsRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/dashboard/chatbot/$threadId': typeof DashboardChatbotThreadIdRoute
   '/dashboard/clients/$slug': typeof DashboardClientsSlugRoute
   '/dashboard/contrats/$clientId': typeof DashboardContratsClientIdRoute
   '/dashboard/equipements/$ref': typeof DashboardEquipementsRefRoute
+  '/dashboard/chatbot/': typeof DashboardChatbotIndexRoute
   '/dashboard/clients/': typeof DashboardClientsIndexRoute
   '/dashboard/contrats/': typeof DashboardContratsIndexRoute
   '/dashboard/equipements/': typeof DashboardEquipementsIndexRoute
@@ -179,6 +201,7 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/api/chat': typeof ApiChatRoute
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
   '/dashboard/carte': typeof DashboardCarteRoute
   '/dashboard/equipe': typeof DashboardEquipeRoute
@@ -188,9 +211,11 @@ export interface FileRoutesByTo {
   '/dashboard/tickets': typeof DashboardTicketsRoute
   '/dashboard': typeof DashboardIndexRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/dashboard/chatbot/$threadId': typeof DashboardChatbotThreadIdRoute
   '/dashboard/clients/$slug': typeof DashboardClientsSlugRoute
   '/dashboard/contrats/$clientId': typeof DashboardContratsClientIdRoute
   '/dashboard/equipements/$ref': typeof DashboardEquipementsRefRoute
+  '/dashboard/chatbot': typeof DashboardChatbotIndexRoute
   '/dashboard/clients': typeof DashboardClientsIndexRoute
   '/dashboard/contrats': typeof DashboardContratsIndexRoute
   '/dashboard/equipements': typeof DashboardEquipementsIndexRoute
@@ -204,6 +229,7 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/api/chat': typeof ApiChatRoute
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
   '/dashboard/carte': typeof DashboardCarteRoute
   '/dashboard/equipe': typeof DashboardEquipeRoute
@@ -213,9 +239,11 @@ export interface FileRoutesById {
   '/dashboard/tickets': typeof DashboardTicketsRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/dashboard/chatbot/$threadId': typeof DashboardChatbotThreadIdRoute
   '/dashboard/clients/$slug': typeof DashboardClientsSlugRoute
   '/dashboard/contrats/$clientId': typeof DashboardContratsClientIdRoute
   '/dashboard/equipements/$ref': typeof DashboardEquipementsRefRoute
+  '/dashboard/chatbot/': typeof DashboardChatbotIndexRoute
   '/dashboard/clients/': typeof DashboardClientsIndexRoute
   '/dashboard/contrats/': typeof DashboardContratsIndexRoute
   '/dashboard/equipements/': typeof DashboardEquipementsIndexRoute
@@ -230,6 +258,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
+    | '/api/chat'
     | '/dashboard/analytics'
     | '/dashboard/carte'
     | '/dashboard/equipe'
@@ -239,9 +268,11 @@ export interface FileRouteTypes {
     | '/dashboard/tickets'
     | '/dashboard/'
     | '/.mcp/invoke-tool/$tool'
+    | '/dashboard/chatbot/$threadId'
     | '/dashboard/clients/$slug'
     | '/dashboard/contrats/$clientId'
     | '/dashboard/equipements/$ref'
+    | '/dashboard/chatbot/'
     | '/dashboard/clients/'
     | '/dashboard/contrats/'
     | '/dashboard/equipements/'
@@ -253,6 +284,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
+    | '/api/chat'
     | '/dashboard/analytics'
     | '/dashboard/carte'
     | '/dashboard/equipe'
@@ -262,9 +294,11 @@ export interface FileRouteTypes {
     | '/dashboard/tickets'
     | '/dashboard'
     | '/.mcp/invoke-tool/$tool'
+    | '/dashboard/chatbot/$threadId'
     | '/dashboard/clients/$slug'
     | '/dashboard/contrats/$clientId'
     | '/dashboard/equipements/$ref'
+    | '/dashboard/chatbot'
     | '/dashboard/clients'
     | '/dashboard/contrats'
     | '/dashboard/equipements'
@@ -277,6 +311,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
+    | '/api/chat'
     | '/dashboard/analytics'
     | '/dashboard/carte'
     | '/dashboard/equipe'
@@ -286,9 +321,11 @@ export interface FileRouteTypes {
     | '/dashboard/tickets'
     | '/dashboard/'
     | '/.mcp/invoke-tool/$tool'
+    | '/dashboard/chatbot/$threadId'
     | '/dashboard/clients/$slug'
     | '/dashboard/contrats/$clientId'
     | '/dashboard/equipements/$ref'
+    | '/dashboard/chatbot/'
     | '/dashboard/clients/'
     | '/dashboard/contrats/'
     | '/dashboard/equipements/'
@@ -302,6 +339,7 @@ export interface RootRouteChildren {
   SignupRoute: typeof SignupRoute
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  ApiChatRoute: typeof ApiChatRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
 }
 
@@ -398,6 +436,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAnalyticsRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/api/chat': {
+      id: '/api/chat'
+      path: '/api/chat'
+      fullPath: '/api/chat'
+      preLoaderRoute: typeof ApiChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/.well-known/oauth-protected-resource': {
       id: '/.well-known/oauth-protected-resource'
       path: '/.well-known/oauth-protected-resource'
@@ -433,6 +478,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardClientsIndexRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/chatbot/': {
+      id: '/dashboard/chatbot/'
+      path: '/chatbot'
+      fullPath: '/dashboard/chatbot/'
+      preLoaderRoute: typeof DashboardChatbotIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/equipements/$ref': {
       id: '/dashboard/equipements/$ref'
       path: '/equipements/$ref'
@@ -454,6 +506,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardClientsSlugRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/chatbot/$threadId': {
+      id: '/dashboard/chatbot/$threadId'
+      path: '/chatbot/$threadId'
+      fullPath: '/dashboard/chatbot/$threadId'
+      preLoaderRoute: typeof DashboardChatbotThreadIdRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/.mcp/invoke-tool/$tool': {
       id: '/.mcp/invoke-tool/$tool'
       path: '/.mcp/invoke-tool/$tool'
@@ -473,9 +532,11 @@ interface DashboardRouteChildren {
   DashboardProfilRoute: typeof DashboardProfilRoute
   DashboardTicketsRoute: typeof DashboardTicketsRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
+  DashboardChatbotThreadIdRoute: typeof DashboardChatbotThreadIdRoute
   DashboardClientsSlugRoute: typeof DashboardClientsSlugRoute
   DashboardContratsClientIdRoute: typeof DashboardContratsClientIdRoute
   DashboardEquipementsRefRoute: typeof DashboardEquipementsRefRoute
+  DashboardChatbotIndexRoute: typeof DashboardChatbotIndexRoute
   DashboardClientsIndexRoute: typeof DashboardClientsIndexRoute
   DashboardContratsIndexRoute: typeof DashboardContratsIndexRoute
   DashboardEquipementsIndexRoute: typeof DashboardEquipementsIndexRoute
@@ -490,9 +551,11 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardProfilRoute: DashboardProfilRoute,
   DashboardTicketsRoute: DashboardTicketsRoute,
   DashboardIndexRoute: DashboardIndexRoute,
+  DashboardChatbotThreadIdRoute: DashboardChatbotThreadIdRoute,
   DashboardClientsSlugRoute: DashboardClientsSlugRoute,
   DashboardContratsClientIdRoute: DashboardContratsClientIdRoute,
   DashboardEquipementsRefRoute: DashboardEquipementsRefRoute,
+  DashboardChatbotIndexRoute: DashboardChatbotIndexRoute,
   DashboardClientsIndexRoute: DashboardClientsIndexRoute,
   DashboardContratsIndexRoute: DashboardContratsIndexRoute,
   DashboardEquipementsIndexRoute: DashboardEquipementsIndexRoute,
@@ -511,6 +574,7 @@ const rootRouteChildren: RootRouteChildren = {
   Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
+  ApiChatRoute: ApiChatRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
 }
 export const routeTree = rootRouteImport

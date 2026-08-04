@@ -18,9 +18,11 @@ import {
   BarChart3,
   Users,
   Map,
+  Bot,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import logo from "@/assets/cti-logo.png";
+import { ChatWidget } from "@/components/chat/ChatWidget";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -39,6 +41,7 @@ const nav = [
   { to: "/dashboard/carte", label: "Carte", icon: Map, exact: false },
   { to: "/dashboard/analytics", label: "Analytics", icon: BarChart3, exact: false },
   { to: "/dashboard/equipe", label: "Équipe", icon: Users, exact: false },
+  { to: "/dashboard/chatbot", label: "Assistant IA", icon: Bot, exact: false },
 ] as const;
 
 
@@ -205,6 +208,8 @@ export function DashboardLayout() {
       <main className="mx-auto max-w-[1400px] px-6 py-8">
         <Outlet />
       </main>
+
+      <ChatWidget />
     </div>
   );
 }
