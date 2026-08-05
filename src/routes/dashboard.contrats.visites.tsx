@@ -380,7 +380,110 @@ function VisitesMensuellesPage() {
       <p className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
         <CalendarCheck className="h-3.5 w-3.5" />
         Le numéro de visite suit l'ordre des mois défini dans le contrat d'origine (4 ou 6 visites par an).
+        Cliquez sur une visite pour joindre son rapport et la valider.
       </p>
+
+      <Dialog open={!!target} onOpenChange={(o) => !o && setTarget(null)}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>
+              Visite n°{target?.index} — {target?.contract}
+            </DialogTitle>
+            <DialogDescription>
+              {target?.date} · {target?.technicien} · {target?.clientId}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div>
+              <label className="mb-1.5 block text-sm font-medium">Rapport de visite</label>
+              <input
+                ref={fileRef}
+                type="file"
+                className="hidden"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) setDraft((d) => ({ ...d, fileName: f.name, fileSize: f.size }));
+                  e.target.value = "";
+                }}
+              />
+              {draft.fileName ? (
+                <div className="flex items-center gap-3 rounded-lg border border-border bg-secondary/40 px-3 py-2.5">
+                  <Paperclip className="h-4 w-4 shrink-0 text-muted-foreground" />
+                  <div className="min-w-0 flex-1">
+                    <div className="truncate text-sm font-medium">{draft.fileName}</div>
+                    <div className="text-xs text-muted-foreground">{formatSize(draft.fileSize)}</div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setDraft((d) => ({ ...d, fileName: "", fileSize: 0 }))}
+                    className="rounded-md p-1.5 text-muted-foreground transition hover:bg-background hover:text-foreground"
+                    aria-label="Retirer le fichier"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => fileRef.current?.click()}
+                  className="flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-border px-3 py-6 text-sm text-muted-foreground transition hover:border-[color:var(--brand-deep)] hover:text-foreground"
+                >
+                  <Upload className="h-4 w-4" /> Joindre un fichier (PDF, photo…)
+                </button>
+              )}
+            </div>
+
+            <div>
+              <label className="mb-1.5 block text-sm font-medium">Observations</label>
+              <Textarea
+                value={draft.note}
+                onChange={(e) => setDraft((d) => ({ ...d, note: e.target.value }))}
+                placeholder="Constats, matériel remplacé, recommandations…"
+                rows={3}
+              />
+            </div>
+
+            {target && reports[target.key]?.validated && (
+              <p className="flex items-center gap-2 rounded-lg bg-emerald-500/10 px-3 py-2 text-xs text-emerald-700 dark:text-emerald-400">
+                <CheckCircle2 className="h-3.5 w-3.5" />
+                Visite validée le {reports[target.key]?.validatedAt}
+              </p>
+            )}
+          </div>
+
+          <DialogFooter className="gap-2 sm:justify-between">
+            {target && reports[target.key] ? (
+              <button
+                type="button"
+                onClick={removeReport}
+                className="inline-flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm text-muted-foreground transition hover:text-destructive"
+              >
+                <Trash2 className="h-4 w-4" /> Supprimer
+              </button>
+            ) : (
+              <span />
+            )}
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => saveDraft(false)}
+                className="rounded-lg border border-border px-4 py-2 text-sm font-medium transition hover:bg-secondary"
+              >
+                Enregistrer
+              </button>
+              <button
+                type="button"
+                onClick={() => saveDraft(true)}
+                className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-95"
+              >
+                <CheckCircle2 className="h-4 w-4" /> Valider la visite
+              </button>
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
+
   );
 }
