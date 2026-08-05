@@ -309,13 +309,28 @@ function VisitesMensuellesPage() {
                     );
                   const isCurrent = v.monthIndex === cursor?.m;
                   const done = isPast(v.date);
+                  const key = visitKey(r.clientId, cursor?.y ?? 0, v.index);
+                  const rep = reports[key];
                   return (
                     <td key={n} className="px-4 py-4">
-                      <div
-                        className={`rounded-lg border px-2.5 py-2 ${
-                          isCurrent
-                            ? "border-[color:var(--brand-deep)] bg-[color:var(--brand-soft)]"
-                            : "border-border bg-secondary/40"
+                      <button
+                        type="button"
+                        onClick={() =>
+                          openVisit({
+                            key,
+                            clientId: r.clientId,
+                            contract: r.contract,
+                            index: v.index,
+                            date: v.date,
+                            technicien: v.technicien,
+                          })
+                        }
+                        className={`w-full rounded-lg border px-2.5 py-2 text-left transition hover:shadow-[var(--shadow-soft)] ${
+                          rep?.validated
+                            ? "border-emerald-500/60 bg-emerald-500/10"
+                            : isCurrent
+                              ? "border-[color:var(--brand-deep)] bg-[color:var(--brand-soft)]"
+                              : "border-border bg-secondary/40"
                         }`}
                       >
                         <div
@@ -328,13 +343,27 @@ function VisitesMensuellesPage() {
                         <div className="mt-0.5 truncate text-[11px] text-muted-foreground">
                           {v.technicien}
                         </div>
-                        <div className="mt-1 text-[10px] uppercase tracking-wider text-muted-foreground/80">
-                          {done ? "Effectuée" : "Planifiée"}
+                        <div className="mt-1 flex items-center gap-1 text-[10px] uppercase tracking-wider text-muted-foreground/80">
+                          {rep?.validated ? (
+                            <>
+                              <CheckCircle2 className="h-3 w-3 text-emerald-600" />
+                              <span className="text-emerald-600">Validée</span>
+                            </>
+                          ) : (
+                            <span>{done ? "Effectuée" : "Planifiée"}</span>
+                          )}
                         </div>
-                      </div>
+                        {rep?.fileName && (
+                          <div className="mt-1 flex items-center gap-1 truncate text-[10px] text-muted-foreground">
+                            <Paperclip className="h-3 w-3 shrink-0" />
+                            <span className="truncate">{rep.fileName}</span>
+                          </div>
+                        )}
+                      </button>
                     </td>
                   );
                 })}
+
               </tr>
             ))}
             {cursor && rows.length === 0 && (
