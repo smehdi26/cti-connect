@@ -30,6 +30,7 @@ import { Route as DashboardContratsIndexRouteImport } from './routes/dashboard.c
 import { Route as DashboardClientsIndexRouteImport } from './routes/dashboard.clients.index'
 import { Route as DashboardChatbotIndexRouteImport } from './routes/dashboard.chatbot.index'
 import { Route as DashboardEquipementsRefRouteImport } from './routes/dashboard.equipements.$ref'
+import { Route as DashboardContratsVisitesRouteImport } from './routes/dashboard.contrats.visites'
 import { Route as DashboardContratsClientIdRouteImport } from './routes/dashboard.contrats.$clientId'
 import { Route as DashboardClientsSlugRouteImport } from './routes/dashboard.clients.$slug'
 import { Route as DashboardChatbotThreadIdRouteImport } from './routes/dashboard.chatbot.$threadId'
@@ -143,6 +144,12 @@ const DashboardEquipementsRefRoute = DashboardEquipementsRefRouteImport.update({
   path: '/equipements/$ref',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardContratsVisitesRoute =
+  DashboardContratsVisitesRouteImport.update({
+    id: '/contrats/visites',
+    path: '/contrats/visites',
+    getParentRoute: () => DashboardRoute,
+  } as any)
 const DashboardContratsClientIdRoute =
   DashboardContratsClientIdRouteImport.update({
     id: '/contrats/$clientId',
@@ -188,6 +195,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/chatbot/$threadId': typeof DashboardChatbotThreadIdRoute
   '/dashboard/clients/$slug': typeof DashboardClientsSlugRoute
   '/dashboard/contrats/$clientId': typeof DashboardContratsClientIdRoute
+  '/dashboard/contrats/visites': typeof DashboardContratsVisitesRoute
   '/dashboard/equipements/$ref': typeof DashboardEquipementsRefRoute
   '/dashboard/chatbot/': typeof DashboardChatbotIndexRoute
   '/dashboard/clients/': typeof DashboardClientsIndexRoute
@@ -214,6 +222,7 @@ export interface FileRoutesByTo {
   '/dashboard/chatbot/$threadId': typeof DashboardChatbotThreadIdRoute
   '/dashboard/clients/$slug': typeof DashboardClientsSlugRoute
   '/dashboard/contrats/$clientId': typeof DashboardContratsClientIdRoute
+  '/dashboard/contrats/visites': typeof DashboardContratsVisitesRoute
   '/dashboard/equipements/$ref': typeof DashboardEquipementsRefRoute
   '/dashboard/chatbot': typeof DashboardChatbotIndexRoute
   '/dashboard/clients': typeof DashboardClientsIndexRoute
@@ -242,6 +251,7 @@ export interface FileRoutesById {
   '/dashboard/chatbot/$threadId': typeof DashboardChatbotThreadIdRoute
   '/dashboard/clients/$slug': typeof DashboardClientsSlugRoute
   '/dashboard/contrats/$clientId': typeof DashboardContratsClientIdRoute
+  '/dashboard/contrats/visites': typeof DashboardContratsVisitesRoute
   '/dashboard/equipements/$ref': typeof DashboardEquipementsRefRoute
   '/dashboard/chatbot/': typeof DashboardChatbotIndexRoute
   '/dashboard/clients/': typeof DashboardClientsIndexRoute
@@ -271,6 +281,7 @@ export interface FileRouteTypes {
     | '/dashboard/chatbot/$threadId'
     | '/dashboard/clients/$slug'
     | '/dashboard/contrats/$clientId'
+    | '/dashboard/contrats/visites'
     | '/dashboard/equipements/$ref'
     | '/dashboard/chatbot/'
     | '/dashboard/clients/'
@@ -297,6 +308,7 @@ export interface FileRouteTypes {
     | '/dashboard/chatbot/$threadId'
     | '/dashboard/clients/$slug'
     | '/dashboard/contrats/$clientId'
+    | '/dashboard/contrats/visites'
     | '/dashboard/equipements/$ref'
     | '/dashboard/chatbot'
     | '/dashboard/clients'
@@ -324,6 +336,7 @@ export interface FileRouteTypes {
     | '/dashboard/chatbot/$threadId'
     | '/dashboard/clients/$slug'
     | '/dashboard/contrats/$clientId'
+    | '/dashboard/contrats/visites'
     | '/dashboard/equipements/$ref'
     | '/dashboard/chatbot/'
     | '/dashboard/clients/'
@@ -492,6 +505,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardEquipementsRefRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/contrats/visites': {
+      id: '/dashboard/contrats/visites'
+      path: '/contrats/visites'
+      fullPath: '/dashboard/contrats/visites'
+      preLoaderRoute: typeof DashboardContratsVisitesRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/contrats/$clientId': {
       id: '/dashboard/contrats/$clientId'
       path: '/contrats/$clientId'
@@ -535,6 +555,7 @@ interface DashboardRouteChildren {
   DashboardChatbotThreadIdRoute: typeof DashboardChatbotThreadIdRoute
   DashboardClientsSlugRoute: typeof DashboardClientsSlugRoute
   DashboardContratsClientIdRoute: typeof DashboardContratsClientIdRoute
+  DashboardContratsVisitesRoute: typeof DashboardContratsVisitesRoute
   DashboardEquipementsRefRoute: typeof DashboardEquipementsRefRoute
   DashboardChatbotIndexRoute: typeof DashboardChatbotIndexRoute
   DashboardClientsIndexRoute: typeof DashboardClientsIndexRoute
@@ -554,6 +575,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardChatbotThreadIdRoute: DashboardChatbotThreadIdRoute,
   DashboardClientsSlugRoute: DashboardClientsSlugRoute,
   DashboardContratsClientIdRoute: DashboardContratsClientIdRoute,
+  DashboardContratsVisitesRoute: DashboardContratsVisitesRoute,
   DashboardEquipementsRefRoute: DashboardEquipementsRefRoute,
   DashboardChatbotIndexRoute: DashboardChatbotIndexRoute,
   DashboardClientsIndexRoute: DashboardClientsIndexRoute,

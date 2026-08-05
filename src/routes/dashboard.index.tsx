@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { PageHeader } from "@/components/dashboard/DashboardLayout";
 import {
   Building2,
@@ -78,10 +78,9 @@ type Event = {
   type: "install" | "maintenance" | "audit";
 };
 
-const today = new Date();
 const iso = (d: Date) => d.toISOString().slice(0, 10);
-const addDays = (n: number) => {
-  const d = new Date(today);
+const addDays = (base: Date, n: number) => {
+  const d = new Date(base);
   d.setDate(d.getDate() + n);
   return iso(d);
 };
@@ -97,13 +96,13 @@ const fmtShort = (isoDate: string) => {
   return `${d} ${MOIS_COURT[Number(m) - 1]}`;
 };
 
-const events: Event[] = [
-  { date: addDays(0), title: "Audit trimestriel VOIP", client: "Société Générale", site: "Tunis Centre", time: "10:00", type: "audit" },
-  { date: addDays(1), title: "Installation bornes WIFI", client: "Hôtel Laico", site: "Hammamet", time: "09:30", type: "install" },
-  { date: addDays(3), title: "Maintenance préventive DECT", client: "Groupe Poulina", site: "Ben Arous", time: "14:00", type: "maintenance" },
-  { date: addDays(5), title: "Migration standard IP", client: "Ooredoo Tunisie", site: "Les Berges du Lac", time: "08:00", type: "install" },
-  { date: addDays(8), title: "Contrôle caméras IP", client: "Délice Danone", site: "Sfax", time: "11:00", type: "maintenance" },
-  { date: addDays(12), title: "Audit annuel sécurité", client: "STEG", site: "Tunis", time: "09:00", type: "audit" },
+const buildEvents = (base: Date): Event[] => [
+  { date: addDays(base, 0), title: "Audit trimestriel VOIP", client: "Société Générale", site: "Tunis Centre", time: "10:00", type: "audit" },
+  { date: addDays(base, 1), title: "Installation bornes WIFI", client: "Hôtel Laico", site: "Hammamet", time: "09:30", type: "install" },
+  { date: addDays(base, 3), title: "Maintenance préventive DECT", client: "Groupe Poulina", site: "Ben Arous", time: "14:00", type: "maintenance" },
+  { date: addDays(base, 5), title: "Migration standard IP", client: "Ooredoo Tunisie", site: "Les Berges du Lac", time: "08:00", type: "install" },
+  { date: addDays(base, 8), title: "Contrôle caméras IP", client: "Délice Danone", site: "Sfax", time: "11:00", type: "maintenance" },
+  { date: addDays(base, 12), title: "Audit annuel sécurité", client: "STEG", site: "Tunis", time: "09:00", type: "audit" },
 ];
 
 const typeStyles: Record<Event["type"], { label: string; cls: string }> = {
@@ -114,11 +113,20 @@ const typeStyles: Record<Event["type"], { label: string; cls: string }> = {
 
 function DashboardHome() {
   const [open, setOpen] = useState(false);
-  const [selected, setSelected] = useState<Date | undefined>(today);
+  const [base, setBase] = useState<Date | null>(null);
+  const [selected, setSelected] = useState<Date | undefined>(undefined);
 
+  useEffect(() => {
+    const now = new Date();
+    setBase(now);
+    setSelected(now);
+  }, []);
+
+  const events = useMemo(() => buildEvents(base ?? new Date(Date.UTC(2026, 0, 1))), [base]);
   const eventDates = events.map((e) => new Date(e.date));
   const selectedIso = selected ? iso(selected) : "";
   const dayEvents = events.filter((e) => e.date === selectedIso);
+
 
   return (
     <>

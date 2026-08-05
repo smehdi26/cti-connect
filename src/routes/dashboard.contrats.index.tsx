@@ -182,6 +182,12 @@ function ContratsPage() {
         description="Suivi des contrats, redevances et calendriers de visites préventives."
         action={
           <div className="flex items-center gap-2">
+            <Link
+              to="/dashboard/contrats/visites"
+              className="inline-flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 text-sm font-medium text-muted-foreground transition hover:text-foreground"
+            >
+              <Calendar className="h-4 w-4" /> Visites mensuelles
+            </Link>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="inline-flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 text-sm font-medium text-muted-foreground transition hover:text-foreground">
