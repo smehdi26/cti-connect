@@ -78,10 +78,9 @@ type Event = {
   type: "install" | "maintenance" | "audit";
 };
 
-const today = new Date();
 const iso = (d: Date) => d.toISOString().slice(0, 10);
-const addDays = (n: number) => {
-  const d = new Date(today);
+const addDays = (base: Date, n: number) => {
+  const d = new Date(base);
   d.setDate(d.getDate() + n);
   return iso(d);
 };
