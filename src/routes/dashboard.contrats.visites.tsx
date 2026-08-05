@@ -87,18 +87,81 @@ const CSV_COLUMNS = [
   ...VISIT_COLS.map((n) => ({ key: `v${n}`, label: `Visite ${n}` })),
 ];
 
+type EditTarget = {
+  key: string;
+  clientId: string;
+  contract: string;
+  index: number;
+  date: string;
+  technicien: string;
+};
+
 function VisitesMensuellesPage() {
   const [cursor, setCursor] = useState<{ y: number; m: number } | null>(null);
+  const [reports, setReports] = useState<Record<string, VisitReport>>({});
+  const [target, setTarget] = useState<EditTarget | null>(null);
+  const [draft, setDraft] = useState<{ fileName: string; fileSize: number; note: string }>({
+    fileName: "",
+    fileSize: 0,
+    note: "",
+  });
+  const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const now = new Date();
     setCursor({ y: now.getFullYear(), m: now.getMonth() });
+    setReports(loadReports());
   }, []);
+
+  const persist = (next: Record<string, VisitReport>) => {
+    setReports(next);
+    saveReports(next);
+  };
+
+  const openVisit = (t: EditTarget) => {
+    const existing = reports[t.key];
+    setDraft({
+      fileName: existing?.fileName ?? "",
+      fileSize: existing?.fileSize ?? 0,
+      note: existing?.note ?? "",
+    });
+    setTarget(t);
+  };
+
+  const saveDraft = (validated: boolean) => {
+    if (!target) return;
+    if (validated && !draft.fileName) {
+      toast.error("Joignez le rapport de visite avant de valider");
+      return;
+    }
+    persist({
+      ...reports,
+      [target.key]: {
+        fileName: draft.fileName,
+        fileSize: draft.fileSize,
+        note: draft.note,
+        validated,
+        validatedAt: validated ? new Date().toLocaleDateString("fr-FR") : undefined,
+      },
+    });
+    toast.success(validated ? "Visite validée" : "Pièce jointe enregistrée");
+    setTarget(null);
+  };
+
+  const removeReport = () => {
+    if (!target) return;
+    const next = { ...reports };
+    delete next[target.key];
+    persist(next);
+    toast.success("Pièce jointe supprimée");
+    setTarget(null);
+  };
 
   const rows = useMemo(
     () => (cursor ? monthlyVisits(cursor.y, cursor.m) : []),
     [cursor],
   );
+
 
   const periodLabel = cursor ? `${MONTH_LABELS[cursor.m]} ${cursor.y}` : "—";
   const shift = (delta: number) =>
