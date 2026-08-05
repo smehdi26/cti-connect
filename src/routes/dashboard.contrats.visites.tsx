@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/dashboard/DashboardLayout";
 import {
@@ -12,6 +12,10 @@ import {
   FileJson,
   Building2,
   ArrowLeft,
+  Paperclip,
+  CheckCircle2,
+  Upload,
+  Trash2,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -21,8 +25,25 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 import { exportCsv, exportJson, exportPdfTable } from "@/lib/export-utils";
 import { MONTH_LABELS, isPast, monthlyVisits, type MonthlyRow } from "@/lib/visits-data";
+import {
+  formatSize,
+  loadReports,
+  saveReports,
+  visitKey,
+  type VisitReport,
+} from "@/lib/visit-reports";
+
 
 export const Route = createFileRoute("/dashboard/contrats/visites")({
   head: () => ({
