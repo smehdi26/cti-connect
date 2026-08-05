@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/dashboard/DashboardLayout";
 import {
@@ -12,6 +12,10 @@ import {
   FileJson,
   Building2,
   ArrowLeft,
+  Paperclip,
+  CheckCircle2,
+  Upload,
+  Trash2,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -21,8 +25,25 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 import { exportCsv, exportJson, exportPdfTable } from "@/lib/export-utils";
 import { MONTH_LABELS, isPast, monthlyVisits, type MonthlyRow } from "@/lib/visits-data";
+import {
+  formatSize,
+  loadReports,
+  saveReports,
+  visitKey,
+  type VisitReport,
+} from "@/lib/visit-reports";
+
 
 export const Route = createFileRoute("/dashboard/contrats/visites")({
   head: () => ({
@@ -66,18 +87,81 @@ const CSV_COLUMNS = [
   ...VISIT_COLS.map((n) => ({ key: `v${n}`, label: `Visite ${n}` })),
 ];
 
+type EditTarget = {
+  key: string;
+  clientId: string;
+  contract: string;
+  index: number;
+  date: string;
+  technicien: string;
+};
+
 function VisitesMensuellesPage() {
   const [cursor, setCursor] = useState<{ y: number; m: number } | null>(null);
+  const [reports, setReports] = useState<Record<string, VisitReport>>({});
+  const [target, setTarget] = useState<EditTarget | null>(null);
+  const [draft, setDraft] = useState<{ fileName: string; fileSize: number; note: string }>({
+    fileName: "",
+    fileSize: 0,
+    note: "",
+  });
+  const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const now = new Date();
     setCursor({ y: now.getFullYear(), m: now.getMonth() });
+    setReports(loadReports());
   }, []);
+
+  const persist = (next: Record<string, VisitReport>) => {
+    setReports(next);
+    saveReports(next);
+  };
+
+  const openVisit = (t: EditTarget) => {
+    const existing = reports[t.key];
+    setDraft({
+      fileName: existing?.fileName ?? "",
+      fileSize: existing?.fileSize ?? 0,
+      note: existing?.note ?? "",
+    });
+    setTarget(t);
+  };
+
+  const saveDraft = (validated: boolean) => {
+    if (!target) return;
+    if (validated && !draft.fileName) {
+      toast.error("Joignez le rapport de visite avant de valider");
+      return;
+    }
+    persist({
+      ...reports,
+      [target.key]: {
+        fileName: draft.fileName,
+        fileSize: draft.fileSize,
+        note: draft.note,
+        validated,
+        validatedAt: validated ? new Date().toLocaleDateString("fr-FR") : undefined,
+      },
+    });
+    toast.success(validated ? "Visite validée" : "Pièce jointe enregistrée");
+    setTarget(null);
+  };
+
+  const removeReport = () => {
+    if (!target) return;
+    const next = { ...reports };
+    delete next[target.key];
+    persist(next);
+    toast.success("Pièce jointe supprimée");
+    setTarget(null);
+  };
 
   const rows = useMemo(
     () => (cursor ? monthlyVisits(cursor.y, cursor.m) : []),
     [cursor],
   );
+
 
   const periodLabel = cursor ? `${MONTH_LABELS[cursor.m]} ${cursor.y}` : "—";
   const shift = (delta: number) =>
@@ -225,13 +309,28 @@ function VisitesMensuellesPage() {
                     );
                   const isCurrent = v.monthIndex === cursor?.m;
                   const done = isPast(v.date);
+                  const key = visitKey(r.clientId, cursor?.y ?? 0, v.index);
+                  const rep = reports[key];
                   return (
                     <td key={n} className="px-4 py-4">
-                      <div
-                        className={`rounded-lg border px-2.5 py-2 ${
-                          isCurrent
-                            ? "border-[color:var(--brand-deep)] bg-[color:var(--brand-soft)]"
-                            : "border-border bg-secondary/40"
+                      <button
+                        type="button"
+                        onClick={() =>
+                          openVisit({
+                            key,
+                            clientId: r.clientId,
+                            contract: r.contract,
+                            index: v.index,
+                            date: v.date,
+                            technicien: v.technicien,
+                          })
+                        }
+                        className={`w-full rounded-lg border px-2.5 py-2 text-left transition hover:shadow-[var(--shadow-soft)] ${
+                          rep?.validated
+                            ? "border-emerald-500/60 bg-emerald-500/10"
+                            : isCurrent
+                              ? "border-[color:var(--brand-deep)] bg-[color:var(--brand-soft)]"
+                              : "border-border bg-secondary/40"
                         }`}
                       >
                         <div
@@ -244,13 +343,27 @@ function VisitesMensuellesPage() {
                         <div className="mt-0.5 truncate text-[11px] text-muted-foreground">
                           {v.technicien}
                         </div>
-                        <div className="mt-1 text-[10px] uppercase tracking-wider text-muted-foreground/80">
-                          {done ? "Effectuée" : "Planifiée"}
+                        <div className="mt-1 flex items-center gap-1 text-[10px] uppercase tracking-wider text-muted-foreground/80">
+                          {rep?.validated ? (
+                            <>
+                              <CheckCircle2 className="h-3 w-3 text-emerald-600" />
+                              <span className="text-emerald-600">Validée</span>
+                            </>
+                          ) : (
+                            <span>{done ? "Effectuée" : "Planifiée"}</span>
+                          )}
                         </div>
-                      </div>
+                        {rep?.fileName && (
+                          <div className="mt-1 flex items-center gap-1 truncate text-[10px] text-muted-foreground">
+                            <Paperclip className="h-3 w-3 shrink-0" />
+                            <span className="truncate">{rep.fileName}</span>
+                          </div>
+                        )}
+                      </button>
                     </td>
                   );
                 })}
+
               </tr>
             ))}
             {cursor && rows.length === 0 && (
@@ -267,7 +380,110 @@ function VisitesMensuellesPage() {
       <p className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
         <CalendarCheck className="h-3.5 w-3.5" />
         Le numéro de visite suit l'ordre des mois défini dans le contrat d'origine (4 ou 6 visites par an).
+        Cliquez sur une visite pour joindre son rapport et la valider.
       </p>
+
+      <Dialog open={!!target} onOpenChange={(o) => !o && setTarget(null)}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>
+              Visite n°{target?.index} — {target?.contract}
+            </DialogTitle>
+            <DialogDescription>
+              {target?.date} · {target?.technicien} · {target?.clientId}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div>
+              <label className="mb-1.5 block text-sm font-medium">Rapport de visite</label>
+              <input
+                ref={fileRef}
+                type="file"
+                className="hidden"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) setDraft((d) => ({ ...d, fileName: f.name, fileSize: f.size }));
+                  e.target.value = "";
+                }}
+              />
+              {draft.fileName ? (
+                <div className="flex items-center gap-3 rounded-lg border border-border bg-secondary/40 px-3 py-2.5">
+                  <Paperclip className="h-4 w-4 shrink-0 text-muted-foreground" />
+                  <div className="min-w-0 flex-1">
+                    <div className="truncate text-sm font-medium">{draft.fileName}</div>
+                    <div className="text-xs text-muted-foreground">{formatSize(draft.fileSize)}</div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setDraft((d) => ({ ...d, fileName: "", fileSize: 0 }))}
+                    className="rounded-md p-1.5 text-muted-foreground transition hover:bg-background hover:text-foreground"
+                    aria-label="Retirer le fichier"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => fileRef.current?.click()}
+                  className="flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-border px-3 py-6 text-sm text-muted-foreground transition hover:border-[color:var(--brand-deep)] hover:text-foreground"
+                >
+                  <Upload className="h-4 w-4" /> Joindre un fichier (PDF, photo…)
+                </button>
+              )}
+            </div>
+
+            <div>
+              <label className="mb-1.5 block text-sm font-medium">Observations</label>
+              <Textarea
+                value={draft.note}
+                onChange={(e) => setDraft((d) => ({ ...d, note: e.target.value }))}
+                placeholder="Constats, matériel remplacé, recommandations…"
+                rows={3}
+              />
+            </div>
+
+            {target && reports[target.key]?.validated && (
+              <p className="flex items-center gap-2 rounded-lg bg-emerald-500/10 px-3 py-2 text-xs text-emerald-700 dark:text-emerald-400">
+                <CheckCircle2 className="h-3.5 w-3.5" />
+                Visite validée le {reports[target.key]?.validatedAt}
+              </p>
+            )}
+          </div>
+
+          <DialogFooter className="gap-2 sm:justify-between">
+            {target && reports[target.key] ? (
+              <button
+                type="button"
+                onClick={removeReport}
+                className="inline-flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm text-muted-foreground transition hover:text-destructive"
+              >
+                <Trash2 className="h-4 w-4" /> Supprimer
+              </button>
+            ) : (
+              <span />
+            )}
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => saveDraft(false)}
+                className="rounded-lg border border-border px-4 py-2 text-sm font-medium transition hover:bg-secondary"
+              >
+                Enregistrer
+              </button>
+              <button
+                type="button"
+                onClick={() => saveDraft(true)}
+                className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-95"
+              >
+                <CheckCircle2 className="h-4 w-4" /> Valider la visite
+              </button>
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
+
   );
 }
