@@ -19,6 +19,8 @@ import {
   Users,
   Map,
   Bot,
+  PanelLeft,
+  PanelTop,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import logo from "@/assets/cti-logo.png";
@@ -71,20 +73,213 @@ function useDarkMode() {
   return { dark, toggle };
 }
 
+type NavMode = "top" | "side";
+
+function useNavMode() {
+  const [mode, setMode] = useState<NavMode>("top");
+  useEffect(() => {
+    const stored = typeof window !== "undefined" ? localStorage.getItem("cti-nav-mode") : null;
+    if (stored === "side" || stored === "top") setMode(stored);
+  }, []);
+  const toggle = () => {
+    setMode((m) => {
+      const next: NavMode = m === "top" ? "side" : "top";
+      localStorage.setItem("cti-nav-mode", next);
+      return next;
+    });
+  };
+  return { mode, toggleMode: toggle };
+}
+
 export function DashboardLayout() {
   const router = useRouter();
   const { dark, toggle } = useDarkMode();
+  const { mode, toggleMode } = useNavMode();
+  const side = mode === "side";
+
+  const toolbar = (
+    <div className="ml-auto flex items-center gap-2">
+      <div className="hidden lg:flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-1.5 text-sm text-muted-foreground">
+        <Search className="h-4 w-4" />
+        <input
+          placeholder="Rechercher…"
+          className="w-48 bg-transparent outline-none placeholder:text-muted-foreground/60"
+        />
+      </div>
+
+      <button
+        onClick={toggleMode}
+        className="hidden md:inline-flex rounded-lg border border-border bg-background p-2 text-muted-foreground transition hover:text-foreground"
+        title={side ? "Navigation en haut" : "Navigation à gauche"}
+        aria-label={side ? "Navigation en haut" : "Navigation à gauche"}
+      >
+        {side ? <PanelTop className="h-4 w-4" /> : <PanelLeft className="h-4 w-4" />}
+      </button>
+
+      <button
+        onClick={toggle}
+        className="rounded-lg border border-border bg-background p-2 text-muted-foreground transition hover:text-foreground"
+        title={dark ? "Thème clair" : "Thème sombre"}
+      >
+        {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+      </button>
+
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button className="relative rounded-lg border border-border bg-background p-2 text-muted-foreground transition hover:text-foreground">
+            <Bell className="h-4 w-4" />
+            <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-[color:var(--brand-accent)]" />
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-80">
+          <DropdownMenuLabel className="flex items-center justify-between">
+            <span>Notifications</span>
+            <span className="rounded-full bg-[color:var(--brand-soft)] px-2 py-0.5 text-[10px] font-medium text-[color:var(--brand-deep)]">
+              {notifications.length} nouvelles
+            </span>
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          {notifications.map((n, i) => (
+            <DropdownMenuItem key={i} className="items-start gap-2 py-2.5">
+              {n.type === "ok" && <CheckCircle2 className="mt-0.5 h-4 w-4 text-emerald-500 shrink-0" />}
+              {n.type === "warn" && <AlertTriangle className="mt-0.5 h-4 w-4 text-amber-500 shrink-0" />}
+              {n.type === "info" && <Info className="mt-0.5 h-4 w-4 text-blue-500 shrink-0" />}
+              <div className="flex-1 min-w-0">
+                <div className="text-sm font-medium text-foreground truncate">{n.title}</div>
+                <div className="text-xs text-muted-foreground truncate">{n.desc}</div>
+                <div className="mt-0.5 text-[10px] text-muted-foreground">{n.time}</div>
+              </div>
+            </DropdownMenuItem>
+          ))}
+          <DropdownMenuSeparator />
+          <DropdownMenuItem asChild className="justify-center text-sm text-[color:var(--brand-accent)]">
+            <Link to="/dashboard/notifications">Voir toutes les notifications</Link>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground transition hover:opacity-90">
+            AB
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-56">
+          <div className="px-2 py-2">
+            <div className="text-sm font-semibold text-foreground">Amine Ben Salah</div>
+            <div className="text-xs text-muted-foreground">amine@cti-network.tn</div>
+          </div>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem asChild>
+            <Link to="/dashboard/profil">
+              <User className="h-4 w-4" /> Mon profil
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link to="/dashboard/parametres">
+              <Settings className="h-4 w-4" /> Paramètres
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={toggleMode}>
+            {side ? <PanelTop className="h-4 w-4" /> : <PanelLeft className="h-4 w-4" />}
+            {side ? "Navigation en haut" : "Navigation à gauche"}
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={toggle}>
+            {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            {dark ? "Thème clair" : "Thème sombre"}
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            onClick={() => router.navigate({ to: "/login" })}
+            className="text-destructive focus:text-destructive"
+          >
+            <LogOut className="h-4 w-4" /> Se déconnecter
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  );
+
+  const mobileNav = (
+    <nav className="md:hidden flex items-center gap-1 overflow-x-auto border-t border-border px-4 py-2">
+      {nav.map((item) => (
+        <Link
+          key={item.to}
+          to={item.to}
+          activeOptions={{ exact: item.exact }}
+          className="shrink-0 rounded-md px-3 py-1.5 text-xs font-medium text-muted-foreground transition data-[status=active]:bg-secondary data-[status=active]:text-foreground"
+        >
+          {item.label}
+        </Link>
+      ))}
+    </nav>
+  );
+
+  const brand = (
+    <Link to="/dashboard" className="flex items-center gap-2">
+      <img src={logo} alt="" className="h-8 w-8" width={32} height={32} />
+      <span className="font-display text-base font-semibold tracking-tight">CTI-Network</span>
+    </Link>
+  );
+
+  if (side) {
+    return (
+      <div className="min-h-screen bg-[color:var(--brand-soft)]/40">
+        <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col border-r border-border bg-background/95 backdrop-blur md:flex">
+          <div className="flex h-16 items-center px-5">{brand}</div>
+          <div className="px-3 pb-2">
+            <div className="px-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground/70">
+              Navigation
+            </div>
+          </div>
+          <nav className="flex-1 space-y-1 overflow-y-auto px-3 pb-4">
+            {nav.map((item) => (
+              <Link
+                key={item.to}
+                to={item.to}
+                activeOptions={{ exact: item.exact }}
+                className="group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition hover:bg-secondary hover:text-foreground data-[status=active]:bg-secondary data-[status=active]:text-foreground"
+              >
+                <span className="absolute left-0 top-1/2 h-0 w-[3px] -translate-y-1/2 rounded-r-full bg-[color:var(--brand-accent)] transition-all group-data-[status=active]:h-5" />
+                <item.icon className="h-4 w-4 shrink-0" />
+                <span className="truncate">{item.label}</span>
+              </Link>
+            ))}
+          </nav>
+          <div className="border-t border-border p-3">
+            <button
+              onClick={toggleMode}
+              className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium text-muted-foreground transition hover:bg-secondary hover:text-foreground"
+            >
+              <PanelTop className="h-4 w-4" /> Navigation en haut
+            </button>
+          </div>
+        </aside>
+
+        <div className="md:pl-64">
+          <header className="sticky top-0 z-30 border-b border-border bg-background/85 backdrop-blur">
+            <div className="flex h-16 items-center gap-6 px-6">
+              <div className="md:hidden">{brand}</div>
+              {toolbar}
+            </div>
+            {mobileNav}
+          </header>
+
+          <main className="mx-auto max-w-[1400px] px-6 py-8">
+            <Outlet />
+          </main>
+        </div>
+
+        <ChatWidget />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[color:var(--brand-soft)]/40">
       <header className="sticky top-0 z-30 border-b border-border bg-background/85 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-[1400px] items-center gap-6 px-6">
-          <Link to="/dashboard" className="flex items-center gap-2">
-            <img src={logo} alt="" className="h-8 w-8" width={32} height={32} />
-            <span className="font-display text-base font-semibold tracking-tight">
-              CTI-Network
-            </span>
-          </Link>
+          {brand}
 
           <nav className="hidden md:flex items-center gap-1">
             {nav.map((item) => (
@@ -102,107 +297,10 @@ export function DashboardLayout() {
             ))}
           </nav>
 
-          <div className="ml-auto flex items-center gap-2">
-            <div className="hidden lg:flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-1.5 text-sm text-muted-foreground">
-              <Search className="h-4 w-4" />
-              <input
-                placeholder="Rechercher…"
-                className="w-48 bg-transparent outline-none placeholder:text-muted-foreground/60"
-              />
-            </div>
-
-            <button
-              onClick={toggle}
-              className="rounded-lg border border-border bg-background p-2 text-muted-foreground transition hover:text-foreground"
-              title={dark ? "Thème clair" : "Thème sombre"}
-            >
-              {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-            </button>
-
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="relative rounded-lg border border-border bg-background p-2 text-muted-foreground transition hover:text-foreground">
-                  <Bell className="h-4 w-4" />
-                  <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-[color:var(--brand-accent)]" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-80">
-                <DropdownMenuLabel className="flex items-center justify-between">
-                  <span>Notifications</span>
-                  <span className="rounded-full bg-[color:var(--brand-soft)] px-2 py-0.5 text-[10px] font-medium text-[color:var(--brand-deep)]">
-                    {notifications.length} nouvelles
-                  </span>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                {notifications.map((n, i) => (
-                  <DropdownMenuItem key={i} className="items-start gap-2 py-2.5">
-                    {n.type === "ok" && <CheckCircle2 className="mt-0.5 h-4 w-4 text-emerald-500 shrink-0" />}
-                    {n.type === "warn" && <AlertTriangle className="mt-0.5 h-4 w-4 text-amber-500 shrink-0" />}
-                    {n.type === "info" && <Info className="mt-0.5 h-4 w-4 text-blue-500 shrink-0" />}
-                    <div className="flex-1 min-w-0">
-                      <div className="text-sm font-medium text-foreground truncate">{n.title}</div>
-                      <div className="text-xs text-muted-foreground truncate">{n.desc}</div>
-                      <div className="mt-0.5 text-[10px] text-muted-foreground">{n.time}</div>
-                    </div>
-                  </DropdownMenuItem>
-                ))}
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild className="justify-center text-sm text-[color:var(--brand-accent)]">
-                  <Link to="/dashboard/notifications">Voir toutes les notifications</Link>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground transition hover:opacity-90">
-                  AB
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <div className="px-2 py-2">
-                  <div className="text-sm font-semibold text-foreground">Amine Ben Salah</div>
-                  <div className="text-xs text-muted-foreground">amine@cti-network.tn</div>
-                </div>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link to="/dashboard/profil">
-                    <User className="h-4 w-4" /> Mon profil
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to="/dashboard/parametres">
-                    <Settings className="h-4 w-4" /> Paramètres
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={toggle}>
-                  {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-                  {dark ? "Thème clair" : "Thème sombre"}
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={() => router.navigate({ to: "/login" })}
-                  className="text-destructive focus:text-destructive"
-                >
-                  <LogOut className="h-4 w-4" /> Se déconnecter
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+          {toolbar}
         </div>
 
-        <nav className="md:hidden flex items-center gap-1 overflow-x-auto border-t border-border px-4 py-2">
-          {nav.map((item) => (
-            <Link
-              key={item.to}
-              to={item.to}
-              activeOptions={{ exact: item.exact }}
-              className="shrink-0 rounded-md px-3 py-1.5 text-xs font-medium text-muted-foreground transition data-[status=active]:bg-secondary data-[status=active]:text-foreground"
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+        {mobileNav}
       </header>
 
       <main className="mx-auto max-w-[1400px] px-6 py-8">
