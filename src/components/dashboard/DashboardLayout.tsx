@@ -28,6 +28,8 @@ import { useEffect, useState } from "react";
 import logo from "@/assets/cti-logo.png";
 import { cn } from "@/lib/utils";
 import { useNavPreferences } from "@/lib/nav-preferences";
+import { ChatWidget } from "@/components/chat/ChatWidget";
+
 
 import {
   DropdownMenu,
