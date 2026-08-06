@@ -106,6 +106,18 @@ export function DashboardLayout() {
         {side ? <PanelTop className="h-4 w-4" /> : <PanelLeft className="h-4 w-4" />}
       </button>
 
+      {side && (
+        <button
+          onClick={toggleCollapsed}
+          className="hidden md:inline-flex rounded-lg border border-border bg-background p-2 text-muted-foreground transition hover:text-foreground"
+          title={collapsed ? "Étendre la sidebar" : "Réduire la sidebar"}
+          aria-label={collapsed ? "Étendre la sidebar" : "Réduire la sidebar"}
+        >
+          {collapsed ? <ChevronsRight className="h-4 w-4" /> : <ChevronsLeft className="h-4 w-4" />}
+        </button>
+      )}
+
+
       <button
         onClick={toggle}
         className="rounded-lg border border-border bg-background p-2 text-muted-foreground transition hover:text-foreground"
