@@ -272,6 +272,64 @@ function ParametresPage() {
               </Card>
 
               <Card
+                icon={navMode === "side" ? PanelLeft : PanelTop}
+                title="Position de la navigation"
+                description="Choisissez une barre en haut ou une sidebar à gauche. Votre choix est mémorisé."
+              >
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {(
+                    [
+                      { id: "top" as const, label: "Barre en haut", hint: "Navigation horizontale, contenu pleine largeur." },
+                      { id: "side" as const, label: "Sidebar à gauche", hint: "Navigation verticale, réductible en mode icônes." },
+                    ]
+                  ).map((opt) => (
+                    <button
+                      key={opt.id}
+                      onClick={() => setNavMode(opt.id)}
+                      className={cn(
+                        "rounded-xl border p-4 text-left transition-all duration-200 hover:border-[color:var(--brand-accent)]/60",
+                        navMode === opt.id
+                          ? "border-[color:var(--brand-accent)] bg-[color:var(--brand-soft)]/60 shadow-sm"
+                          : "border-border bg-background",
+                      )}
+                    >
+                      <div className="flex items-center gap-3">
+                        {opt.id === "top" ? (
+                          <div className="w-full max-w-[96px] space-y-1 rounded-md border border-border p-1.5">
+                            <div className="h-2 rounded bg-[color:var(--brand-accent)]/70" />
+                            <div className="h-6 rounded bg-secondary" />
+                          </div>
+                        ) : (
+                          <div className="flex w-full max-w-[96px] gap-1 rounded-md border border-border p-1.5">
+                            <div className="w-3 rounded bg-[color:var(--brand-accent)]/70" />
+                            <div className="h-9 flex-1 rounded bg-secondary" />
+                          </div>
+                        )}
+                      </div>
+                      <div className="mt-3 flex items-center gap-2 text-sm font-medium text-foreground">
+                        {opt.label}
+                        {navMode === opt.id && <Check className="h-4 w-4 text-[color:var(--brand-accent)]" />}
+                      </div>
+                      <div className="text-xs text-muted-foreground">{opt.hint}</div>
+                    </button>
+                  ))}
+                </div>
+
+                <Row
+                  label="Sidebar réduite (mode icônes)"
+                  hint={
+                    navMode === "side"
+                      ? "Affiche uniquement les icônes pour gagner de l'espace."
+                      : "Disponible lorsque la navigation est à gauche."
+                  }
+                  checked={navCollapsed}
+                  onCheckedChange={setNavCollapsed}
+                />
+              </Card>
+
+
+
+              <Card
                 icon={Globe}
                 title="Langue et région"
                 description="Langue d'affichage, fuseau horaire et format des dates."
