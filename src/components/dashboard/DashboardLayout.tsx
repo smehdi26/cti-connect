@@ -21,10 +21,14 @@ import {
   Bot,
   PanelLeft,
   PanelTop,
+  ChevronsLeft,
+  ChevronsRight,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import logo from "@/assets/cti-logo.png";
-import { ChatWidget } from "@/components/chat/ChatWidget";
+import { cn } from "@/lib/utils";
+import { useNavPreferences } from "@/lib/nav-preferences";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
