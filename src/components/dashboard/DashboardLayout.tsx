@@ -73,29 +73,13 @@ function useDarkMode() {
   return { dark, toggle };
 }
 
-type NavMode = "top" | "side";
-
-function useNavMode() {
-  const [mode, setMode] = useState<NavMode>("top");
-  useEffect(() => {
-    const stored = typeof window !== "undefined" ? localStorage.getItem("cti-nav-mode") : null;
-    if (stored === "side" || stored === "top") setMode(stored);
-  }, []);
-  const toggle = () => {
-    setMode((m) => {
-      const next: NavMode = m === "top" ? "side" : "top";
-      localStorage.setItem("cti-nav-mode", next);
-      return next;
-    });
-  };
-  return { mode, toggleMode: toggle };
-}
-
 export function DashboardLayout() {
   const router = useRouter();
   const { dark, toggle } = useDarkMode();
-  const { mode, toggleMode } = useNavMode();
+  const { mode, collapsed, toggleMode, toggleCollapsed } = useNavPreferences();
   const side = mode === "side";
+  const mini = side && collapsed;
+
 
   const toolbar = (
     <div className="ml-auto flex items-center gap-2">
