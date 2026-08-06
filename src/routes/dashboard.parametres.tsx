@@ -147,6 +147,13 @@ function ParametresPage() {
   const [fuseau, setFuseau] = useState("Africa/Tunis");
   const [dateFmt, setDateFmt] = useState("dd/MM/yyyy");
   const [density, setDensity] = useState("confort");
+  const {
+    mode: navMode,
+    setMode: setNavMode,
+    collapsed: navCollapsed,
+    setCollapsed: setNavCollapsed,
+  } = useNavPreferences();
+
   const [twoFa, setTwoFa] = useState(true);
   const [assistant, setAssistant] = useState({ widget: true, suggestions: true });
 
