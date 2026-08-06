@@ -342,7 +342,7 @@ export function DashboardLayout() {
           {mobileNav}
         </header>
 
-        <main key={mode} className="mx-auto max-w-[1400px] animate-fade-in px-6 py-8">
+        <main className="mx-auto max-w-[1400px] px-6 py-8 transition-all duration-300 ease-out">
           <Outlet />
         </main>
       </div>
