@@ -206,95 +206,134 @@ export function DashboardLayout() {
     </Link>
   );
 
-  if (side) {
-    return (
-      <div className="min-h-screen bg-[color:var(--brand-soft)]/40">
-        <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col border-r border-border bg-background/95 backdrop-blur md:flex">
-          <div className="flex h-16 items-center px-5">{brand}</div>
-          <div className="px-3 pb-2">
-            <div className="px-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground/70">
-              Navigation
-            </div>
-          </div>
-          <nav className="flex-1 space-y-1 overflow-y-auto px-3 pb-4">
-            {nav.map((item) => (
-              <Link
-                key={item.to}
-                to={item.to}
-                activeOptions={{ exact: item.exact }}
-                className="group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition hover:bg-secondary hover:text-foreground data-[status=active]:bg-secondary data-[status=active]:text-foreground"
-              >
-                <span className="absolute left-0 top-1/2 h-0 w-[3px] -translate-y-1/2 rounded-r-full bg-[color:var(--brand-accent)] transition-all group-data-[status=active]:h-5" />
-                <item.icon className="h-4 w-4 shrink-0" />
-                <span className="truncate">{item.label}</span>
-              </Link>
-            ))}
-          </nav>
-          <div className="border-t border-border p-3">
-            <button
-              onClick={toggleMode}
-              className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium text-muted-foreground transition hover:bg-secondary hover:text-foreground"
-            >
-              <PanelTop className="h-4 w-4" /> Navigation en haut
-            </button>
-          </div>
-        </aside>
-
-        <div className="md:pl-64">
-          <header className="sticky top-0 z-30 border-b border-border bg-background/85 backdrop-blur">
-            <div className="flex h-16 items-center gap-6 px-6">
-              <div className="md:hidden">{brand}</div>
-              {toolbar}
-            </div>
-            {mobileNav}
-          </header>
-
-          <main className="mx-auto max-w-[1400px] px-6 py-8">
-            <Outlet />
-          </main>
-        </div>
-
-        <ChatWidget />
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-[color:var(--brand-soft)]/40">
-      <header className="sticky top-0 z-30 border-b border-border bg-background/85 backdrop-blur">
-        <div className="mx-auto flex h-16 max-w-[1400px] items-center gap-6 px-6">
-          {brand}
-
-          <nav className="hidden md:flex items-center gap-1">
-            {nav.map((item) => (
-              <Link
-                key={item.to}
-                to={item.to}
-                activeOptions={{ exact: item.exact }}
-                className="rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition hover:bg-secondary hover:text-foreground data-[status=active]:bg-secondary data-[status=active]:text-foreground"
-              >
-                <span className="inline-flex items-center gap-2">
-                  <item.icon className="h-4 w-4" />
-                  {item.label}
-                </span>
-              </Link>
-            ))}
-          </nav>
-
-          {toolbar}
+      {/* Sidebar — always mounted so switching animates smoothly */}
+      <aside
+        aria-hidden={!side}
+        className={cn(
+          "fixed inset-y-0 left-0 z-40 hidden flex-col border-r border-border bg-background/95 backdrop-blur transition-[width,transform,opacity] duration-300 ease-out md:flex",
+          mini ? "w-[76px]" : "w-64",
+          side ? "translate-x-0 opacity-100" : "pointer-events-none -translate-x-full opacity-0",
+        )}
+      >
+        <div className={cn("flex h-16 items-center transition-all duration-300", mini ? "justify-center px-2" : "px-5")}>
+          {mini ? (
+            <Link to="/dashboard" aria-label="CTI-Network">
+              <img src={logo} alt="" className="h-8 w-8" width={32} height={32} />
+            </Link>
+          ) : (
+            brand
+          )}
         </div>
+        <div className={cn("px-3 pb-2 transition-opacity duration-200", mini && "opacity-0")}>
+          <div className="px-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground/70">
+            Navigation
+          </div>
+        </div>
+        <nav className="flex-1 space-y-1 overflow-y-auto px-3 pb-4">
+          {nav.map((item) => (
+            <Link
+              key={item.to}
+              to={item.to}
+              activeOptions={{ exact: item.exact }}
+              title={mini ? item.label : undefined}
+              className={cn(
+                "group relative flex items-center gap-3 rounded-lg py-2.5 text-sm font-medium text-muted-foreground transition-all duration-200 hover:bg-secondary hover:text-foreground data-[status=active]:bg-secondary data-[status=active]:text-foreground",
+                mini ? "justify-center px-0" : "px-3",
+              )}
+            >
+              <span className="absolute left-0 top-1/2 h-0 w-[3px] -translate-y-1/2 rounded-r-full bg-[color:var(--brand-accent)] transition-all group-data-[status=active]:h-5" />
+              <item.icon className="h-4 w-4 shrink-0" />
+              <span
+                className={cn(
+                  "truncate transition-all duration-200",
+                  mini && "w-0 opacity-0",
+                )}
+              >
+                {item.label}
+              </span>
+            </Link>
+          ))}
+        </nav>
+        <div className="space-y-1 border-t border-border p-3">
+          <button
+            onClick={toggleCollapsed}
+            className={cn(
+              "flex w-full items-center gap-2 rounded-lg py-2 text-xs font-medium text-muted-foreground transition hover:bg-secondary hover:text-foreground",
+              mini ? "justify-center px-0" : "px-3",
+            )}
+            title={mini ? "Étendre la sidebar" : "Réduire la sidebar"}
+          >
+            {mini ? <ChevronsRight className="h-4 w-4" /> : <ChevronsLeft className="h-4 w-4" />}
+            {!mini && "Réduire la sidebar"}
+          </button>
+          <button
+            onClick={toggleMode}
+            className={cn(
+              "flex w-full items-center gap-2 rounded-lg py-2 text-xs font-medium text-muted-foreground transition hover:bg-secondary hover:text-foreground",
+              mini ? "justify-center px-0" : "px-3",
+            )}
+            title="Navigation en haut"
+          >
+            <PanelTop className="h-4 w-4" />
+            {!mini && "Navigation en haut"}
+          </button>
+        </div>
+      </aside>
 
-        {mobileNav}
-      </header>
+      <div
+        className={cn(
+          "transition-[padding] duration-300 ease-out",
+          side ? (mini ? "md:pl-[76px]" : "md:pl-64") : "md:pl-0",
+        )}
+      >
+        <header className="sticky top-0 z-30 border-b border-border bg-background/85 backdrop-blur">
+          <div
+            className={cn(
+              "flex h-16 items-center gap-6 px-6 transition-all duration-300",
+              side ? "" : "mx-auto max-w-[1400px]",
+            )}
+          >
+            <div className={cn(side && "md:hidden")}>{brand}</div>
 
-      <main className="mx-auto max-w-[1400px] px-6 py-8">
-        <Outlet />
-      </main>
+            <nav
+              className={cn(
+                "hidden items-center gap-1 transition-all duration-300 md:flex",
+                side && "pointer-events-none w-0 -translate-x-2 overflow-hidden opacity-0",
+              )}
+            >
+              {nav.map((item) => (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  activeOptions={{ exact: item.exact }}
+                  className="shrink-0 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition hover:bg-secondary hover:text-foreground data-[status=active]:bg-secondary data-[status=active]:text-foreground"
+                >
+                  <span className="inline-flex items-center gap-2">
+                    <item.icon className="h-4 w-4" />
+                    {item.label}
+                  </span>
+                </Link>
+              ))}
+            </nav>
+
+            {toolbar}
+          </div>
+
+          {mobileNav}
+        </header>
+
+        <main key={mode} className="mx-auto max-w-[1400px] animate-fade-in px-6 py-8">
+          <Outlet />
+        </main>
+      </div>
 
       <ChatWidget />
     </div>
   );
 }
+
 
 export function PageHeader({
   title,
