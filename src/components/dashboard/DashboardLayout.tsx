@@ -309,15 +309,15 @@ export function DashboardLayout() {
         <header className="sticky top-0 z-30 border-b border-border bg-background/85 backdrop-blur">
           <div
             className={cn(
-              "flex h-16 items-center gap-6 px-6 transition-all duration-300",
+              "grid h-16 grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-4 transition-all duration-300 sm:gap-6 sm:px-6 lg:flex lg:gap-6",
               side ? "" : "mx-auto max-w-[1400px]",
             )}
           >
-            <div className={cn(side && "md:hidden")}>{brand}</div>
+            <div className={cn("min-w-0", side && "md:hidden")}>{brand}</div>
 
             <nav
               className={cn(
-                "hidden items-center gap-1 transition-all duration-300 md:flex",
+                "hidden min-w-0 items-center gap-1 overflow-x-auto transition-all duration-300 md:flex",
                 side && "pointer-events-none w-0 -translate-x-2 overflow-hidden opacity-0",
               )}
             >
@@ -329,14 +329,14 @@ export function DashboardLayout() {
                   className="shrink-0 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition hover:bg-secondary hover:text-foreground data-[status=active]:bg-secondary data-[status=active]:text-foreground"
                 >
                   <span className="inline-flex items-center gap-2">
-                    <item.icon className="h-4 w-4" />
+                    <item.icon className="h-4 w-4 shrink-0" />
                     {item.label}
                   </span>
                 </Link>
               ))}
             </nav>
 
-            {toolbar}
+            <div className="shrink-0">{toolbar}</div>
           </div>
 
           {mobileNav}
